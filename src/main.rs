@@ -19,7 +19,7 @@ fn print_solution(day: Box<dyn Solution>) {
 
 fn time_solution(part: &str, solution: &str, time: f64) {
     match solution {
-        "0" | "" => println!("Part {} not implemented", part),
+        "" => println!("Part {} not implemented", part),
         _ => println!("The solution to part {} is: {}", part, solution),
     }
     println!("Time it took: {}", time);
