@@ -2,7 +2,7 @@
 pub async fn get_input(day_num: u8) -> Result<String, String>  {
     let Ok(dir_path) = std::env::current_dir()
     else { return Err("Couldn't create path to directory".to_string()) };
-    let path = dir_path.join(std::path::PathBuf::from("input_files/session_id.txt"));
+    let path = dir_path.join(std::path::PathBuf::from("header_data/session_id.txt"));
     
     let Ok(session_id) = std::fs::read_to_string(path) 
     else { return Err(format!("Failed to get session id")) };

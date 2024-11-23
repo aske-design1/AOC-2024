@@ -66,7 +66,7 @@ pub async fn parse_args(args: &Vec<String>) -> Result<Box<dyn Solution>, String>
     let Ok(day_num) = day.parse::<u8>()
     else { return Err("Not a digit given".to_string()) };
 
-    let input = match crate::api::request_handler::get_input(day_num).await {
+    let input = match crate::data_handler::request_handler::get_input(day_num).await {
         Ok(content) => content,
         Err(e) => return Err(e),
     };

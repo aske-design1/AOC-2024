@@ -4,7 +4,7 @@ use aoc_2024::solutions::Solution;
 #[tokio::main]
 async fn main() {
     let args: Vec<String> = env::args().collect();
-    match aoc_2024::file_handler::parse_args(&args).await {
+    match aoc_2024::data_handler::args_handler::parse_args(&args).await {
         Ok(day) => print_solution(day),
         Err(e) => println!("Error: {e}")
     }
