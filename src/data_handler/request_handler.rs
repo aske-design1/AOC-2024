@@ -1,11 +1,11 @@
+use crate::error_handling::Error;
 
-pub async fn get_input(day_num: u8) -> Result<String, String>  {
-    let Ok(dir_path) = std::env::current_dir()
-    else { return Err("Couldn't create path to directory".to_string()) };
-    let path = dir_path.join(std::path::PathBuf::from("header_data/session_id.txt"));
+
+pub async fn get_input(day_num: u8) -> Result<String, Error>  {
+    let path = std::env::current_dir()?
+    .join(std::path::PathBuf::from("header_data/session_id.txt"));
     
-    let Ok(session_id) = std::fs::read_to_string(path) 
-    else { return Err(format!("Failed to get session id")) };
+    let session_id = std::fs::read_to_string(path)?;
     let url = format!("https://adventofcode.com/2024/day/{day_num}/input");
     
     let response = 
@@ -15,21 +15,22 @@ pub async fn get_input(day_num: u8) -> Result<String, String>  {
     .send()
     .await;
 
-    let Ok(response) = response 
-    else { return Err("Failure parsing future".to_string()) };
+    let Ok(response) = response
+    else { return Err(Error::NetworkError("Failure parsing future".to_string())) };
 
     if response.status() == reqwest::StatusCode::BAD_REQUEST {
-        return Err("Session id invalid".to_string())
+        return Err(Error::NetworkError("Bad request: 400".to_string()))
     }
 
     if response.status() == reqwest::StatusCode::NOT_FOUND {
-        return Err("Page not found".to_string())
+        return Err(Error::NetworkError("Page not found: 404".to_string()))
     }
 
     match response.text().await {
-        Ok(failure) 
-        if failure.len() == 210 && &failure[..6] == "Please" => Err("Day not released yet".to_string()),
+        Ok(failure) if failure.len() == 210 && &failure[..6] == "Please" 
+        => Err(Error::NetworkError("Content not released".to_string())),
+
         Ok(input) => Ok(input),
-        Err(_) => Err("Getting input failed".to_string()),
+        Err(_) => Err(Error::NetworkError("Getting input failed".to_string()))
     }
 }

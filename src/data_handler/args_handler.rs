@@ -1,6 +1,8 @@
+use std::io::Write;
+
 use crate::solutions::Solution;
 use crate::solutions::{
-    day1, 
+    day01, 
     /*day2,
     day3,
     day4,
@@ -26,53 +28,88 @@ use crate::solutions::{
     day24,
     day25*/
 };
+use crate::error_handling::Error;
 
-fn create_day_object(day_num: u8, input: String) -> Result<Box<dyn Solution>, String> {
+type FileResult<T> = Result<T, Error>;
+
+
+fn create_day_object(day_num: u8, input: String) -> Box<dyn Solution> {
     match day_num {
-        1 => Ok(Box::new(day1::Day1::new(&input))),
-        /*2 => Ok(Box::new(day2::Day2::new(input))),
-        3 => Ok(Box::new(day3::Day3::new(input))),
-        4 => Ok(Box::new(day4::Day4::new(input))),
-        5 => Ok(Box::new(day5::Day5::new(input))),
-        6 => Ok(Box::new(day6::Day6::new(input))),
-        7 => Ok(Box::new(day7::Day7::new(input))),
-        8 => Ok(Box::new(day8::Day8::new(input))),
-        9 => Ok(Box::new(day9::Day9::new(input))),
-        10 => Ok(Box::new(day10::Day10::new(input))),
-        11 => Ok(Box::new(day11::Day11::new(input))),
-        12 => Ok(Box::new(day12::Day12::new(input))),
-        13 => Ok(Box::new(day13::Day13::new(input))),
-        14 => Ok(Box::new(day14::Day14::new(input))),
-        15 => Ok(Box::new(day15::Day15::new(input))),
-        16 => Ok(Box::new(day16::Day16::new(input))),
-        17 => Ok(Box::new(day17::Day17::new(input))),
-        18 => Ok(Box::new(day18::Day18::new(input))),
-        19 => Ok(Box::new(day19::Day19::new(input))),
-        20 => Ok(Box::new(day20::Day20::new(input))),
-        21 => Ok(Box::new(day21::Day21::new(input))),
-        22 => Ok(Box::new(day22::Day22::new(input))),
-        23 => Ok(Box::new(day23::Day23::new(input))),
-        24 => Ok(Box::new(day24::Day24::new(input))),
-        25 => Ok(Box::new(day25::Day25::new(input))),*/
-        _ => Err("Not a valid day number".to_string())
+        1 => Box::new(day01::Day1::new(&input)),
+        /*2 => Box::new(day2::Day2::new(input)),
+        3 => Box::new(day3::Day3::new(input)),
+        4 => Box::new(day4::Day4::new(input)),
+        5 => Box::new(day5::Day5::new(input)),
+        6 => Box::new(day6::Day6::new(input)),
+        7 => Box::new(day7::Day7::new(input)),
+        8 => Box::new(day8::Day8::new(input)),
+        9 => Box::new(day9::Day9::new(input)),
+        10 => Box::new(day10::Day10::new(input)),
+        11 => Box::new(day11::Day11::new(input)),
+        12 => Box::new(day12::Day12::new(input)),
+        13 => Box::new(day13::Day13::new(input)),
+        14 => Box::new(day14::Day14::new(input)),
+        15 => Box::new(day15::Day15::new(input)),
+        16 => Box::new(day16::Day16::new(input)),
+        17 => Box::new(day17::Day17::new(input)),
+        18 => Box::new(day18::Day18::new(input)),
+        19 => Box::new(day19::Day19::new(input)),
+        20 => Box::new(day20::Day20::new(input)),
+        21 => Box::new(day21::Day21::new(input)),
+        22 => Box::new(day22::Day22::new(input)),
+        23 => Box::new(day23::Day23::new(input)),
+        24 => Box::new(day24::Day24::new(input)),
+        25 => Box::new(day25::Day25::new(input)),*/
+        _ => unreachable!()
     }
 }
 
-pub async fn parse_args(args: &Vec<String>) -> Result<Box<dyn Solution>, String> {
-    if args.len() < 3 {
-        return Err("Not enough arguments supplied".to_string());
-    }
-    let (operation, day) = (&args[1], &args[2]);
-    let Ok(day_num) = day.parse::<u8>()
-    else { return Err("Not a digit given".to_string()) };
+pub fn get_input(args: &[String]) -> FileResult<Box<dyn Solution>> {
+    let day = &args[0];
+    let day_num = day.parse::<u8>()?;
 
-    let input = match crate::data_handler::request_handler::get_input(day_num).await {
-        Ok(content) => content,
-        Err(e) => return Err(e),
-    };
+    let path = super::file_handler::create_path("files", "txt", day_num)?;
 
-    match (operation.to_ascii_lowercase().as_str(), day_num) {
-        ("day", _) => create_day_object(day_num, input),
-        _ => Err("Invalid Operation given".to_string()),
+    if !(0..=25).contains(&day_num) { 
+        return Err(Error::InvalidDayNumber(day_num))
     }
+
+    let input = std::fs::read_to_string(path)?;
+
+    Ok(create_day_object(day_num, input))
 }
+
+pub async fn create_input_file(args: &[String]) -> FileResult<String> {    
+    let day_num = args[0].parse::<u8>()?;
+
+    let path = super::file_handler::create_path("files", "txt", day_num)?;
+
+    if std::fs::read(&path).is_ok() {
+        return Ok("File already exists".to_string())
+    }
+
+    let content = super::request_handler::get_input(day_num).await?;
+
+    std::fs::File::create(path)?.write_all(content.as_bytes())?;
+    Ok("File successfully created".to_string())
+}
+
+pub fn create_rust_file(args: &[String]) -> FileResult<String> {
+    let day_num = args[0].parse::<u8>()?;
+
+    let path = super::file_handler::create_path("src\\solutions", "rs", day_num)?;
+
+    if std::fs::read(&path).is_ok() {
+        return Ok("File already exists".to_string())
+    }
+
+    let mut file = std::fs::File::create(path)?;
+    let content = super::template::get_template(day_num);
+    file.write_all(content.as_bytes())?;
+
+    Ok("File succesfully created".to_string())
+}
+
+//todo write tests
+//todo split into seperate files --> Figure out some smart names
+//todo Maybe put error_handling file into another folder

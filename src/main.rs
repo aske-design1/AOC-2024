@@ -3,11 +3,36 @@ use aoc_2024::solutions::Solution;
 
 #[tokio::main]
 async fn main() {
+    use aoc_2024::data_handler::args_handler;
+    
     let args: Vec<String> = env::args().collect();
-    match aoc_2024::data_handler::args_handler::parse_args(&args).await {
-        Ok(day) => print_solution(day),
-        Err(e) => println!("Error: {e}")
+
+    if args.len() < 3 { 
+        println!("{}",aoc_2024::error_handling::Error::NotEnoughArgs(args.len()));
+        return 
     }
+
+    match args[1].to_lowercase().as_str() {
+        "day" => {
+            match args_handler::get_input(&args[2..]) {
+                Ok(day) => print_solution(day),
+                Err(e) => println!("{e}")
+            } 
+        },
+        "create_input_file" => {
+            match args_handler::create_input_file(&args[2..]).await {
+                Ok(msg) => println!("{msg}"),
+                Err(msg) => println!("{msg}")
+            }
+        },
+        "create_rs_file" => {
+            match args_handler::create_rust_file(&args[2..]) {
+                Ok(msg) => println!("{msg}"),
+                Err(msg) => println!("{msg}")
+            }
+        },
+        _ => return println!("Error: Invalid operation inputted")
+    }    
 }
 
 fn print_solution(day: Box<dyn Solution>) {
