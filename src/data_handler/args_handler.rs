@@ -3,14 +3,14 @@ use std::io::Write;
 use crate::solutions::Solution;
 use crate::solutions::{
     day01, 
-    /*day2,
-    day3,
-    day4,
-    day5,
-    day6,
-    day7,
-    day8,
-    day9,
+    day02,
+    /*day03,
+    day04,
+    day05,
+    day06,
+    day07,
+    day08,
+    day09,
     day10,
     day11,
     day12,
@@ -35,8 +35,8 @@ type FileResult<T> = Result<T, Error>;
 
 fn create_day_object(day_num: u8, input: String) -> Box<dyn Solution> {
     match day_num {
-        1  => Box::new(day01::Day1::new(&input)),/*
-        2  => Box::new(day02::Day2::new(&&input)),
+        1  => Box::new(day01::Day1::new(&input)),
+        2  => Box::new(day02::Day2::new(&&input)),/*
         3  => Box::new(day03::Day3::new(&&input)),
         4  => Box::new(day04::Day4::new(&&input)),
         5  => Box::new(day05::Day5::new(&&input)),

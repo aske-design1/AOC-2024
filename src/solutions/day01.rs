@@ -61,7 +61,8 @@ impl Solution for Day1 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    const TEST: &str = "3   4
+    const TEST: &str = 
+"3   4
 4   3
 2   5
 1   3
