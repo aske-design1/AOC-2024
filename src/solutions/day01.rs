@@ -1,8 +1,6 @@
 use std::collections::HashMap;
-
 use super::Solution;
 
-#[allow(dead_code)]
 pub struct Day1 {
     right: Vec<u32>,
     left: Vec<u32>
@@ -10,12 +8,10 @@ pub struct Day1 {
 
 impl Day1 {
     pub fn new(input: &str) -> Self {
-        let splitter = if input.contains("\r\n") { "\r\n" } else { "\n" }; 
-
+        let splitter = if input.contains("\r\n") { "\r\n" } else { "\n" };
         let (right, left): (Vec<u32>, Vec<u32>) = input.split(splitter)
         .map(|line| {
-            let Some((num1, num2)) = line.split_once("   ") else { panic!("not valid input") } ;
-
+            let Some((num1, num2)) = line.split_once("   ") else { panic!("not valid input") };
             (num1.parse::<u32>().unwrap(), num2.parse::<u32>().unwrap())
         }).collect();
         Self { right, left }
@@ -30,8 +26,7 @@ impl Day1 {
 
     fn solve2(&self) -> u32 {
         let mut column2 = HashMap::with_capacity(1000); 
-        self.right.iter()
-        .for_each(|el| {
+        self.right.iter().for_each(|el| {
             column2.entry(el).and_modify(|occurrences| *occurrences+=1).or_insert(1);
         });
         self.left.iter().map(|&el| el * *column2.get(&el).unwrap_or(&0)).sum()

@@ -10,6 +10,7 @@ pub struct Day{day_num} {{
 
 impl Day{day_num} {{
     pub fn new(input: &str) -> Self {{
+        let splitter = if input.contains("\r\n") {{ "\r\n" }} else {{ "\n" }};
         let input = input.to_string();
         Self {{ input }}
     }}

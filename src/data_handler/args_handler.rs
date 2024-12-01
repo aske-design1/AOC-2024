@@ -36,14 +36,14 @@ type FileResult<T> = Result<T, Error>;
 fn create_day_object(day_num: u8, input: String) -> Box<dyn Solution> {
     match day_num {
         1  => Box::new(day01::Day1::new(&input)),
-        2  => Box::new(day02::Day2::new(&&input)),/*
-        3  => Box::new(day03::Day3::new(&&input)),
-        4  => Box::new(day04::Day4::new(&&input)),
-        5  => Box::new(day05::Day5::new(&&input)),
-        6  => Box::new(day06::Day6::new(&&input)),
-        7  => Box::new(day07::Day7::new(&&input)),
-        8  => Box::new(day08::Day8::new(&&input)),
-        9  => Box::new(day09::Day9::new(&&input)),
+        2  => Box::new(day02::Day2::new(&input)),/*
+        3  => Box::new(day03::Day3::new(&input)),
+        4  => Box::new(day04::Day4::new(&input)),
+        5  => Box::new(day05::Day5::new(&input)),
+        6  => Box::new(day06::Day6::new(&input)),
+        7  => Box::new(day07::Day7::new(&input)),
+        8  => Box::new(day08::Day8::new(&input)),
+        9  => Box::new(day09::Day9::new(&input)),
         10 => Box::new(day10::Day10::new(&input)),
         11 => Box::new(day11::Day11::new(&input)),
         12 => Box::new(day12::Day12::new(&input)),
@@ -81,7 +81,6 @@ pub fn get_input(args: &[String]) -> FileResult<Box<dyn Solution>> {
 
 pub async fn create_input_file(args: &[String]) -> FileResult<String> {    
     let day_num = args[0].parse::<u8>()?;
-
     let path = super::file_handler::create_path("files", "txt", day_num)?;
 
     if std::fs::read(&path).is_ok() {
@@ -89,7 +88,6 @@ pub async fn create_input_file(args: &[String]) -> FileResult<String> {
     }
 
     let content = super::request_handler::get_input(day_num).await?;
-
     std::fs::File::create(path)?.write_all(content.as_bytes())?;
 
     Ok("File successfully created".to_string())
@@ -97,7 +95,6 @@ pub async fn create_input_file(args: &[String]) -> FileResult<String> {
 
 pub fn create_rust_file(args: &[String]) -> FileResult<String> {
     let day_num = args[0].parse::<u8>()?;
-
     let path = super::file_handler::create_path("src\\solutions", "rs", day_num)?;
 
     if std::fs::read(&path).is_ok() {

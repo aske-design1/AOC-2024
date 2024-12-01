@@ -1,4 +1,3 @@
-
 use super::*;
 
 pub struct Day2 {
@@ -7,6 +6,8 @@ pub struct Day2 {
 
 impl Day2 {
     pub fn new(input: &str) -> Self {
+        let splitter = if input.contains("\r\n") { "\r\n" } else { "\n" };
+
         let input = input.to_string();
         Self { input }
     }
