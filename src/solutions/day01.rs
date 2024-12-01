@@ -4,52 +4,38 @@ use super::Solution;
 
 #[allow(dead_code)]
 pub struct Day1 {
-    input: Vec<(i32, i32)>
+    right: Vec<u32>,
+    left: Vec<u32>
 }
 
 impl Day1 {
     pub fn new(input: &str) -> Self {
         let splitter = if input.contains("\r\n") { "\r\n" } else { "\n" }; 
 
-        let input = input.split(splitter)
+        let input: (Vec<u32>, Vec<u32>) = input.split(splitter)
         .map(|line| {
             let Some((num1, num2)) = line.split_once("   ") else { panic!("not valid input") } ;
 
-            (num1.parse().unwrap(), num2.parse().unwrap())
+            (num1.parse::<u32>().unwrap(), num2.parse::<u32>().unwrap())
         }).collect();
-        Self { input }
+        Self { right: input.0, left: input.1 }
     }
 
     fn solve1(&self) -> u32 {
-        let (mut column1, mut column2): (Vec<i32>, Vec<i32>) 
-        = self.input.iter().map(|(a, b)| (a,b)).unzip();
-
+        let (mut column1, mut column2)
+        = (self.right.clone(), self.left.clone());
         column1.sort();
         column2.sort();
-
-        let mut total_dist = 0; 
-        for i in 0..self.input.len() {
-            let (num1, num2) = (column1[i], column2[i]);
-            total_dist += (num1 - num2).abs() as u32;
-        }
-        return total_dist;
+        column1.iter().zip(column2).map(|(a, b)| a.abs_diff(b)).sum()
     }
 
     fn solve2(&self) -> u32 {
-        let mut column1 = Vec::new(); 
-        let mut column2 = HashMap::new(); 
-        for line in self.input.iter() {
-            column1.push(line.0);
-            column2.entry(line.1).and_modify(|occurrences| *occurrences+=1).or_insert(1);   
-        }
-
-        let mut total_dist = 0; 
-        for num in column1 {
-            total_dist += if let Some(occurences) = column2.get(&num)  {
-                (num * occurences) as u32
-            } else { 0 }
-        }
-        return total_dist;
+        let mut column2 = HashMap::with_capacity(1000); 
+        self.right.iter()
+        .for_each(|el| {
+            column2.entry(el).and_modify(|occurrences| *occurrences+=1).or_insert(1);
+        });
+        self.left.iter().map(|&el| el * *column2.get(&el).unwrap_or(&0)).sum()
     }
 }
 
