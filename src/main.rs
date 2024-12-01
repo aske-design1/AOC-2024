@@ -51,6 +51,6 @@ fn print_solution(day: Box<dyn Solution>) {
 fn time_solution(part: &str, solution: &str, time: u128) {
     match solution {
         "" => println!("Part {} not implemented", part),
-        _ => println!("The solution to part {} is: {}\nFinished in: {} micro sec", part, solution,time),
+        _ => println!("The solution to part {} is: {}\nFinished in: {}µs", part, solution,time),
     }
 }

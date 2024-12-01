@@ -4,7 +4,7 @@ use super::Solution;
 
 #[allow(dead_code)]
 pub struct Day1 {
-    input: Vec<(u32, u32)>
+    input: Vec<(i32, i32)>
 }
 
 impl Day1 {
@@ -21,12 +21,8 @@ impl Day1 {
     }
 
     fn solve1(&self) -> u32 {
-        let mut column1 = Vec::new(); 
-        let mut column2 = Vec::new(); 
-        for line in self.input.iter() {
-            column1.push(line.0);
-            column2.push(line.1);
-        }
+        let (mut column1, mut column2): (Vec<i32>, Vec<i32>) 
+        = self.input.iter().map(|(a, b)| (a,b)).unzip();
 
         column1.sort();
         column2.sort();
@@ -34,13 +30,7 @@ impl Day1 {
         let mut total_dist = 0; 
         for i in 0..self.input.len() {
             let (num1, num2) = (column1[i], column2[i]);
-
-            total_dist += if num1 > num2 {
-                num1 - num2
-            } else {
-                num2 - num1
-            };
-            
+            total_dist += (num1 - num2).abs() as u32;
         }
         return total_dist;
     }
@@ -56,21 +46,15 @@ impl Day1 {
         let mut total_dist = 0; 
         for num in column1 {
             total_dist += if let Some(occurences) = column2.get(&num)  {
-                num * occurences
+                (num * occurences) as u32
             } else { 0 }
-
         }
-
-
         return total_dist;
     }
-
 }
 
 impl Solution for Day1 {
-    fn part1(&self) -> String {         
-        self.solve1().to_string() 
-    }
+    fn part1(&self) -> String { self.solve1().to_string() }
     fn part2(&self) -> String { self.solve2().to_string() } 
 }
 
