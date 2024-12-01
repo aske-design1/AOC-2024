@@ -1,6 +1,7 @@
 use crate::error_handling::Error;
+use std::path::PathBuf;
 
-pub fn create_path(dir: &str, file_type: &str, day_num: u8) -> Result<std::path::PathBuf, Error> {
+pub fn create_path(dir: &str, file_type: &str, day_num: u8) -> Result<PathBuf, Error> {
     let dir_path = std::env::current_dir()?;
 
     let formatted_day = match day_num {
@@ -10,6 +11,6 @@ pub fn create_path(dir: &str, file_type: &str, day_num: u8) -> Result<std::path:
     };
 
     Ok(dir_path.join(
-        std::path::PathBuf::from(format!("{dir}\\{formatted_day}"))
+        PathBuf::from(format!("{dir}\\{formatted_day}"))
     ))
 }

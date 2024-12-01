@@ -6,27 +6,26 @@ use std::path::PathBuf;
 
 #[derive(Debug)]
 pub enum Error {
-    //todo make errors more specific
-    Custom(String),
     InvalidDayNumber(u8),
     Parse(std::num::ParseIntError),
     Path(io::Error),
     InvalidPath { path: PathBuf },
     NetworkError(String),
-    NotEnoughArgs(usize)
+    NotEnoughArgs(usize),
+    InvalidOperation(String)
 }
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use Error::*;
         match self {
-            Custom(message) => write!(f, "Error occurred: {}", message),
             InvalidDayNumber(num) => write!(f, "Invalid Day number: {}", num),
             Parse(err) => write!(f, "Parse error: {}", err),
             Path(err) => write!(f, "Path error: {}", err),
             InvalidPath { path } => write!(f, "Invalid path: {:?}", path),
             NetworkError(err) => write!(f, "Networking error: {}", err),
-            NotEnoughArgs(amt) => write!(f, "Argument error: Only {} argument was supplied", amt)
+            NotEnoughArgs(amt) => write!(f, "Argument error: Only {} argument was supplied", amt),
+            InvalidOperation(err) => write!(f, "Argument error: Operation inputted is not recognized -> {}", err)
         }
     }
 }
