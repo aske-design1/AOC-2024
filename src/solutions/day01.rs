@@ -12,20 +12,19 @@ impl Day1 {
     pub fn new(input: &str) -> Self {
         let splitter = if input.contains("\r\n") { "\r\n" } else { "\n" }; 
 
-        let input: (Vec<u32>, Vec<u32>) = input.split(splitter)
+        let (right, left): (Vec<u32>, Vec<u32>) = input.split(splitter)
         .map(|line| {
             let Some((num1, num2)) = line.split_once("   ") else { panic!("not valid input") } ;
 
             (num1.parse::<u32>().unwrap(), num2.parse::<u32>().unwrap())
         }).collect();
-        Self { right: input.0, left: input.1 }
+        Self { right, left }
     }
 
     fn solve1(&self) -> u32 {
-        let (mut column1, mut column2)
-        = (self.right.clone(), self.left.clone());
-        column1.sort();
-        column2.sort();
+        let (mut column1, mut column2) = (self.right.clone(), self.left.clone());
+        column1.sort_unstable();
+        column2.sort_unstable();
         column1.iter().zip(column2).map(|(a, b)| a.abs_diff(b)).sum()
     }
 
