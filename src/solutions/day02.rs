@@ -20,9 +20,9 @@ impl Day2 {
             if Self::safety_check(line, 0, line[0] < line[1], skip_active) ||
             skip_active && Self::safety_check(&line[1..], 0, line[1] < line[2], false) {
                 accepted += 1;
-                //println!("{:?} true", line)
+                println!("{:?} true", line)
             } else {
-                //println!("{:?} false", line)
+                println!("{:?} false", line)
             }
         }
         accepted 
@@ -31,14 +31,14 @@ impl Day2 {
    
     fn safety_check(line: &[u8], mut i: usize, ascend: bool, skip_active: bool) -> bool {
         while i < line.len() - 1  {
-            let mut flag = true;
+            let mut valid = true;
             let (num1, num2) = (line[i], line[i + 1]);
 
             if num1.abs_diff(num2) > 3 || ascend && num1 >= num2 || !ascend && num1 <= num2 {
-                flag = false 
+                valid = false 
             }
 
-            if !flag {
+            if !valid {
 
                 if !skip_active {
                     return false
@@ -64,7 +64,7 @@ impl Day2 {
 }
 
 impl Solution for Day2 {
-    fn part1(&self) -> String { self.solver(false).to_string() }
+    fn part1(&self) -> String { 0.to_string() }
     fn part2(&self) -> String { self.solver(true).to_string()  }
 }
 
