@@ -1,5 +1,3 @@
-use itertools::Itertools;
-
 use super::*;
 
 pub struct Day2 {
@@ -42,7 +40,6 @@ impl Day2 {
                 return 
                 Self::safety_check(&vec1, i.saturating_sub(1), false) ||
                 Self::safety_check(&vec2, i, false)
-
             }
             
             i+=1;
@@ -66,8 +63,7 @@ mod tests {
 9 7 6 2 1
 1 3 2 4 5
 8 6 4 4 1
-1 3 6 7 9
-53 54 57 58 59 61 65";
+1 3 6 7 9";
     
     #[test] fn test1() {
         assert_eq!(Day2::new(TEST).part1(), 2.to_string());
