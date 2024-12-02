@@ -17,8 +17,13 @@ impl Day2 {
     fn solve1(&self, part2: bool) -> u32 {
         let mut accepted = 0;
         for line in self.input.iter() {
-            accepted += if Self::is_safe(line, part2) { 1 } 
-            else { 0 };
+            accepted += if Self::is_safe(line, part2) 
+            || Self::is_safe(&line[1..].to_vec(), false) { 
+                1 
+            } 
+            else { 
+                0 
+            };
         }
         accepted 
     }
@@ -34,8 +39,8 @@ impl Day2 {
         true
     }
     
-    fn part2(line: &Vec<u8>, _i: usize) -> bool {
-        for i in 0..line.len() {
+    fn part2(line: &Vec<u8>, i: usize) -> bool {
+        for i in i..i+2 {
             let mut new_line = line.clone();
             new_line.remove(i);
             if Self::is_safe(&new_line, false) {
