@@ -64,8 +64,8 @@ impl Day2 {
         true
     }
 
-    fn new_func(line: &Vec<u8>, ascend: bool, mut skip_active: bool) -> bool {
-        let mut line: Vec<u8> = line.iter().copied().collect();
+    fn new_func(line: &[u8], ascend: bool, mut skip_active: bool) -> bool {
+        //let mut line: Vec<u8> = line.iter().copied().collect();
         let mut i = 1;
         while i < line.len() {
             let mut flag = true;
@@ -78,9 +78,12 @@ impl Day2 {
             if flag {
                 i+=1;
             } else if !flag && skip_active {
-                skip_active = false;
-                line.remove(i);
-                continue;
+                return Self::new_func(&line[i..], ascend, false) || 
+                Self::new_func(&line[i..i+1].iter().copied()
+                .chain(line[i + 1..].iter().copied()).collect::<Vec<u8>>(), ascend, false)
+
+                //skip_active = false;
+                //line.remove(i);
             } else {
                 return false
             }
