@@ -29,7 +29,6 @@ impl Day2 {
         let ascend = line[0] < line[1];
         while i < line.len() - 1  {
             let (num1, num2) = (line[i], line[i + 1]);
-
             if num1.abs_diff(num2) > 3 || ascend && num1 >= num2 || !ascend && num1 <= num2 {
                 if !skip_active {
                     return false
@@ -43,17 +42,19 @@ impl Day2 {
                 return 
                 Self::safety_check(&vec1, i.saturating_sub(1), false) ||
                 Self::safety_check(&vec2, i, false)
+
             }
             
             i+=1;
         }
-        true
+        return false
     }
 
 }
 
 impl Solution for Day2 {
     fn part1(&self) -> String { self.solver(false).to_string() }
+
     fn part2(&self) -> String { self.solver(true).to_string()  }
 }
 
