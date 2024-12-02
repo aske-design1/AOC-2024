@@ -48,7 +48,7 @@ impl Day2 {
 
                 return i != 0 && (i + 1 == line.len() ||
                 Self::safety_check(&vec1, i-1, ascend, false) ||
-                Self::safety_check(&vec2, i-1, ascend, false))
+                Self::safety_check(&vec2, i, ascend, false))
             }
 
             i+=1;
