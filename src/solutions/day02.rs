@@ -20,6 +20,9 @@ impl Day2 {
             if Self::safety_check(line, 0, line[0] < line[1], skip_active) ||
             skip_active && Self::safety_check(&line[1..], 0, line[1] < line[2], false) {
                 accepted += 1;
+                //println!("{:?} true", line)
+            } else {
+                //println!("{:?} false", line)
             }
         }
         accepted 
@@ -45,14 +48,16 @@ impl Day2 {
                 vec1.remove(i);
                 let mut vec2 = line.to_vec();
                 vec2.remove(i+1);
+                
 
-                return i != 0 && (i + 1 == line.len() ||
-                Self::safety_check(&vec1, i-1, ascend, false) ||
-                Self::safety_check(&vec2, i, ascend, false))
+                return 
+                Self::safety_check(&vec1, i.saturating_sub(1), ascend, false) ||
+                Self::safety_check(&vec2, i, ascend, false)
             }
 
             i+=1;
-        } 
+        }
+
         true
     }
 
@@ -71,7 +76,8 @@ mod tests {
 9 7 6 2 1
 1 3 2 4 5
 8 6 4 4 1
-1 3 6 7 9";
+1 3 6 7 9
+53 54 57 58 59 61 65";
     
     #[test] fn test1() {
         assert_eq!(Day2::new(TEST).part1(), 2.to_string());
