@@ -14,32 +14,28 @@ impl Day2 {
         Self { input }
     }
 
-    fn solve1(&self, part2: bool) -> u32 {
+    fn solver(&self, part2: bool) -> u32 {
         let mut accepted = 0;
         for line in self.input.iter() {
             accepted += if Self::is_safe(line, part2) 
-            || part2 && Self::is_safe(&line[1..].to_vec(), false) { 
-                1 
-            } 
-            else { 
-                0 
-            };
+            || part2 && Self::is_safe(&line[1..].to_vec(), false) 
+            { 1 } 
+            else { 0 };
         }
         accepted 
     }
 
     fn is_safe(line: &Vec<u8>, part2: bool) -> bool {
         let ascending = line[0] < line[1];
-
         for (i, (num1, num2)) in line.iter().tuple_windows().enumerate() {
             if num1.abs_diff(*num2) > 3 || ascending && *num1 >= *num2 || !ascending && *num1 <= *num2 {
-                return part2 && Self::part2(line, i)
+                return part2 && Self::skip_part(line, i)
             }
         }
         true
     }
     
-    fn part2(line: &Vec<u8>, i: usize) -> bool {
+    fn skip_part(line: &Vec<u8>, i: usize) -> bool {
         for i in i..i+2 {
             let mut new_line = line.clone();
             new_line.remove(i);
@@ -53,8 +49,8 @@ impl Day2 {
 }
 
 impl Solution for Day2 {
-    fn part1(&self) -> String { self.solve1(false).to_string() }
-    fn part2(&self) -> String { self.solve1(true).to_string() }
+    fn part1(&self) -> String { self.solver(false).to_string() }
+    fn part2(&self) -> String { self.solver(true).to_string() }
 }
 
 #[cfg(test)]
