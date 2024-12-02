@@ -37,14 +37,13 @@ impl Day2 {
                 let mut vec2 = line.to_vec();
                 vec2.remove(i+1);
                 
-                return 
-                Self::safety_check(&vec1, i.saturating_sub(1), false) ||
-                Self::safety_check(&vec2, i, false)
+                //Two cases: First case skips the first number and the second case skips the second number
+                return Self::safety_check(&vec1, i.saturating_sub(1), false) || Self::safety_check(&vec2, i, false)
             }
             
             i+=1;
         }
-        return false
+        true
     }
 
 }
