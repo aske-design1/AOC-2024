@@ -14,34 +14,38 @@ impl Day2 {
         Self { input }
     }
 
-    fn solver(&self, part2: bool) -> u32 {
+    fn solver(&self, skip_active: bool) -> u32 {
         let mut accepted = 0;
         for line in self.input.iter() {
-            accepted += if Self::is_safe(line, part2) 
-            || part2 && Self::is_safe(&line[1..].to_vec(), false) 
-            { 1 } 
-            else { 0 };
+            if Self::safety_check(line, 0, skip_active) ||
+            skip_active && Self::safety_check(&line[1..], 0, false) {
+                accepted += 1;
+            }
         }
         accepted 
     }
+   
+    fn safety_check(line: &[u8], mut i: usize, skip_active: bool) -> bool {
+        let ascend = line[0] < line[1];
+        while i < line.len() - 1  {
+            let (num1, num2) = (line[i], line[i + 1]);
+            if num1.abs_diff(num2) > 3 || ascend && num1 >= num2 || !ascend && num1 <= num2 {
+                if !skip_active {
+                    return false
+                }
 
-    fn is_safe(line: &Vec<u8>, part2: bool) -> bool {
-        let ascending = line[0] < line[1];
-        for (i, (num1, num2)) in line.iter().tuple_windows().enumerate() {
-            if num1.abs_diff(*num2) > 3 || ascending && *num1 >= *num2 || !ascending && *num1 <= *num2 {
-                return part2 && Self::skip_part(line, i)
+                let mut vec1 = line.to_vec();
+                vec1.remove(i);
+                let mut vec2 = line.to_vec();
+                vec2.remove(i+1);
+                
+                return 
+                Self::safety_check(&vec1, i.saturating_sub(1), false) ||
+                Self::safety_check(&vec2, i, false)
+
             }
-        }
-        true
-    }
-    
-    fn skip_part(line: &Vec<u8>, i: usize) -> bool {
-        for i in i..i+2 {
-            let mut new_line = line.clone();
-            new_line.remove(i);
-            if Self::is_safe(&new_line, false) {
-                return true
-            }
+            
+            i+=1;
         }
         return false
     }
@@ -50,7 +54,8 @@ impl Day2 {
 
 impl Solution for Day2 {
     fn part1(&self) -> String { self.solver(false).to_string() }
-    fn part2(&self) -> String { self.solver(true).to_string() }
+
+    fn part2(&self) -> String { self.solver(true).to_string()  }
 }
 
 #[cfg(test)]
@@ -61,7 +66,8 @@ mod tests {
 9 7 6 2 1
 1 3 2 4 5
 8 6 4 4 1
-1 3 6 7 9";
+1 3 6 7 9
+53 54 57 58 59 61 65";
     
     #[test] fn test1() {
         assert_eq!(Day2::new(TEST).part1(), 2.to_string());
