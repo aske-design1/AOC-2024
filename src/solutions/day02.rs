@@ -20,6 +20,7 @@ impl Day2 {
             if Self::safety_check(line, 0, line[0] < line[1], skip_active) ||
             skip_active && Self::safety_check(&line[1..], 0, line[1] < line[2], false) {
                 accepted += 1;
+            }
         }
         accepted 
     } 
@@ -54,7 +55,6 @@ impl Day2 {
         } 
         true
     }
-
 
 }
 
