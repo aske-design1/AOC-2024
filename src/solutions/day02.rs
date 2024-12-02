@@ -18,7 +18,7 @@ impl Day2 {
         let mut accepted = 0;
         for line in self.input.iter() {
             accepted += if Self::is_safe(line, part2) 
-            || Self::is_safe(&line[1..].to_vec(), false) { 
+            || part2 && Self::is_safe(&line[1..].to_vec(), false) { 
                 1 
             } 
             else { 
