@@ -28,12 +28,40 @@ impl Day2 {
     fn solver(&self, skip_active: bool) -> u32 {
         let mut accepted = 0;
         for line in self.input.iter() {
-            if Self::new_func(line, line[0] < line[1], skip_active) {
+    if Self::new_func(line, line[0] < line[1], skip_active) ||
+    skip_active && Self::new_func(&line[1..], line[1] < line[2], false) {
                 accepted += 1;
             }
         }
         accepted 
     } 
+
+   
+    fn new_func(line: &[u8], ascend: bool, skip_active: bool) -> bool {
+        //let mut line: Vec<u8> = line.iter().copied().collect();
+        let mut i = 1;
+        while i < line.len() {
+            let mut flag = true;
+            let (num1, num2) = (line[i-1], line[i]);
+
+            if num1.abs_diff(num2) > 3 || ascend && num1 >= num2 || !ascend && num1 <= num2 {
+                flag = false 
+            }
+
+            if flag {
+                i+=1;
+            } else if !flag && skip_active {
+                return Self::new_func(&line[i..], ascend, false) || 
+                Self::new_func(&vec![(i-1) as u8].iter().copied()
+                .chain(line[i + 1..].iter().copied()).collect::<Vec<u8>>(), ascend, false)
+
+            } else {
+                return false
+            }
+        } 
+        true
+    }
+
 
     fn check_safety(line: &[u8], ascend: bool, should_ignore: bool) -> bool {
         if line.len() <= 1 { return true }
@@ -53,83 +81,6 @@ impl Day2 {
         );
 
         ascension || descension || skip_level
-    }
-
-    fn check_ascending(line: &Vec<u8>) -> bool {
-        for (num1, num2) in line.iter().tuple_windows() {
-            if *num1 <= *num2 || num1.abs_diff(*num2) > 3 {
-                return false
-            }
-        }
-        true
-    }
-
-    fn new_func(line: &[u8], ascend: bool, mut skip_active: bool) -> bool {
-        //let mut line: Vec<u8> = line.iter().copied().collect();
-        let mut i = 1;
-        while i < line.len() {
-            let mut flag = true;
-            let (num1, num2) = (line[i-1], line[i]);
-
-            if num1.abs_diff(num2) > 3 || ascend && num1 >= num2 || !ascend && num1 <= num2 {
-                flag = false 
-            }
-
-            if flag {
-                i+=1;
-            } else if !flag && skip_active {
-                return Self::new_func(&line[i..], ascend, false) || 
-                Self::new_func(&line[i..i+1].iter().copied()
-                .chain(line[i + 1..].iter().copied()).collect::<Vec<u8>>(), ascend, false)
-
-                //skip_active = false;
-                //line.remove(i);
-            } else {
-                return false
-            }
-        } 
-        true
-    }
-    
-    fn check_descending(line: &Vec<u8>) -> bool {
-        for (num1, num2) in line.iter().tuple_windows() {
-            if *num1 >= *num2 || num1.abs_diff(*num2) > 3 {
-                return false
-            }
-        }
-        true
-    }
-
-    fn check_ascending2(line: &Vec<u8>) -> bool {
-        for (num1, num2) in line.iter().tuple_windows() {
-            if *num1 <= *num2 || num1.abs_diff(*num2) > 3 {
-                for i in 0..line.len() {
-                    let mut new_line = line.clone();
-                    new_line.remove(i);
-                    if Self::check_ascending(&new_line) {
-                        return true
-                    }
-                }
-                return false 
-            }
-        }
-        true
-    }
-    
-    fn check_descending2(line: &Vec<u8>) -> bool {
-        for (num1, num2) in line.iter().tuple_windows() {
-            if *num1 >= *num2 || num1.abs_diff(*num2) > 3 {
-                for i in 0..line.len() {
-                    let mut new_line = line.clone();
-                    new_line.remove(i);
-                    if Self::check_descending(&new_line) {
-                        return true
-                    }
-                }
-                return false 
-            }
-        }
-        true
     }
 
 }
