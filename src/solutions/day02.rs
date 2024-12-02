@@ -14,27 +14,36 @@ impl Day2 {
         Self { input }
     }
 
-    fn solve1(&self) -> u32 {
+    fn solver(&self, should_ignore: bool) -> u32 {
         let mut accepted = 0;
         for line in self.input.iter() {
-            accepted += if Self::check_ascending(line) { 1 } 
-            else if Self::check_descending(line) { 1 } 
-            else { 0 };
+            if Self::check_safety(line, line[0] < line[1], should_ignore) ||
+            should_ignore && Self::check_safety(&line[1..], line[1] < line[2], false) {
+                accepted += 1;
+            }
         }
-
         accepted 
     } 
 
-    fn solve2(&self) -> u32 {
-        let mut accepted = 0;
-        for line in self.input.iter() {
-            accepted += if Self::check_ascending2(line) { 1 } 
-            else if Self::check_descending2(line) { 1 } 
-            else { 0 };
-        }
+    fn check_safety(line: &[u8], ascend: bool, should_ignore: bool) -> bool {
+        if line.len() <= 1 { return true }
+        let (num1, num2) = (line[0], line[1]);
 
-        accepted 
-    } 
+        let ascension = ascend && num1 < num2 && num1.abs_diff(num2) <= 3 && 
+        Self::check_safety(&line[1..], ascend, should_ignore);
+ 
+        let descension = !ascend && num1 > num2 && num1.abs_diff(num2) <= 3 
+        && Self::check_safety(&line[1..], ascend, should_ignore);
+
+
+        let skip_level = should_ignore && Self::check_safety(
+            &line[..1].iter().copied().chain(line[2..].iter().copied()).collect::<Vec<u8>>(), 
+            ascend, 
+            false
+        );
+
+        ascension || descension || skip_level
+    }
 
     fn check_ascending(line: &Vec<u8>) -> bool {
         for (num1, num2) in line.iter().tuple_windows() {
@@ -89,8 +98,8 @@ impl Day2 {
 }
 
 impl Solution for Day2 {
-    fn part1(&self) -> String { self.solve1().to_string() }
-    fn part2(&self) -> String { self.solve2().to_string() }
+    fn part1(&self) -> String { self.solver(false).to_string() }
+    fn part2(&self) -> String { self.solver(true).to_string()  }
 }
 
 #[cfg(test)]
