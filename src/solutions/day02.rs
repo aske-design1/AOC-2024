@@ -31,17 +31,12 @@ impl Day2 {
             if Self::safety_check(line, 0, line[0] < line[1], skip_active) ||
             skip_active && Self::safety_check(&line[1..], 0, line[1] < line[2], false) {
                 accepted += 1;
-                //println!("{:?} Accepted", line);
-            } else {
-                //println!("Not accepted");
-            }
         }
         accepted 
     } 
 
    
     fn safety_check(line: &[u8], mut i: usize, ascend: bool, skip_active: bool) -> bool {
-
         while i < line.len() - 1  {
             let mut flag = true;
             let (num1, num2) = (line[i], line[i + 1]);
@@ -71,26 +66,6 @@ impl Day2 {
         true
     }
 
-
-    fn check_safety(line: &[u8], ascend: bool, should_ignore: bool) -> bool {
-        if line.len() <= 1 { return true }
-        let (num1, num2) = (line[0], line[1]);
-
-        let ascension = ascend && num1 < num2 && num1.abs_diff(num2) <= 3 && 
-        Self::check_safety(&line[1..], ascend, should_ignore);
- 
-        let descension = !ascend && num1 > num2 && num1.abs_diff(num2) <= 3 
-        && Self::check_safety(&line[1..], ascend, should_ignore);
-
-
-        let skip_level = should_ignore && Self::check_safety(
-            &line[..1].iter().copied().chain(line[2..].iter().copied()).collect::<Vec<u8>>(), 
-            ascend, 
-            false
-        );
-
-        ascension || descension || skip_level
-    }
 
 }
 
