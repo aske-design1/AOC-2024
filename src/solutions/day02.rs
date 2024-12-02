@@ -28,36 +28,45 @@ impl Day2 {
     fn solver(&self, skip_active: bool) -> u32 {
         let mut accepted = 0;
         for line in self.input.iter() {
-    if Self::new_func(line, line[0] < line[1], skip_active) ||
-    skip_active && Self::new_func(&line[1..], line[1] < line[2], false) {
+            if Self::safety_check(line, 0, line[0] < line[1], skip_active) ||
+            skip_active && Self::safety_check(&line[1..], 0, line[1] < line[2], false) {
                 accepted += 1;
+                //println!("{:?} Accepted", line);
+            } else {
+                //println!("Not accepted");
             }
         }
         accepted 
     } 
 
    
-    fn new_func(line: &[u8], ascend: bool, skip_active: bool) -> bool {
-        //let mut line: Vec<u8> = line.iter().copied().collect();
-        let mut i = 1;
-        while i < line.len() {
+    fn safety_check(line: &[u8], mut i: usize, ascend: bool, skip_active: bool) -> bool {
+
+        while i < line.len() - 1  {
             let mut flag = true;
-            let (num1, num2) = (line[i-1], line[i]);
+            let (num1, num2) = (line[i], line[i + 1]);
 
             if num1.abs_diff(num2) > 3 || ascend && num1 >= num2 || !ascend && num1 <= num2 {
                 flag = false 
             }
 
-            if flag {
-                i+=1;
-            } else if !flag && skip_active {
-                return Self::new_func(&line[i..], ascend, false) || 
-                Self::new_func(&vec![(i-1) as u8].iter().copied()
-                .chain(line[i + 1..].iter().copied()).collect::<Vec<u8>>(), ascend, false)
+            if !flag {
 
-            } else {
-                return false
+                if !skip_active {
+                    return false
+                }
+
+                let mut vec1 = line.to_vec();
+                vec1.remove(i);
+                let mut vec2 = line.to_vec();
+                vec2.remove(i+1);
+
+                return i != 0 && (i + 1 == line.len() ||
+                Self::safety_check(&vec1, i-1, ascend, false) ||
+                Self::safety_check(&vec2, i-1, ascend, false))
             }
+
+            i+=1;
         } 
         true
     }
