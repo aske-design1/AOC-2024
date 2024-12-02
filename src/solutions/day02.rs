@@ -17,29 +17,20 @@ impl Day2 {
     fn solver(&self, skip_active: bool) -> u32 {
         let mut accepted = 0;
         for line in self.input.iter() {
-            if Self::safety_check(line, 0, line[0] < line[1], skip_active) ||
-            skip_active && Self::safety_check(&line[1..], 0, line[1] < line[2], false) {
+            if Self::safety_check(line, 0, skip_active) ||
+            skip_active && Self::safety_check(&line[1..], 0, false) {
                 accepted += 1;
-                println!("{:?} true", line)
-            } else {
-                println!("{:?} false", line)
             }
         }
         accepted 
-    } 
-
+    }
    
-    fn safety_check(line: &[u8], mut i: usize, ascend: bool, skip_active: bool) -> bool {
+    fn safety_check(line: &[u8], mut i: usize, skip_active: bool) -> bool {
+        let ascend = line[0] < line[1];
         while i < line.len() - 1  {
-            let mut valid = true;
             let (num1, num2) = (line[i], line[i + 1]);
 
             if num1.abs_diff(num2) > 3 || ascend && num1 >= num2 || !ascend && num1 <= num2 {
-                valid = false 
-            }
-
-            if !valid {
-
                 if !skip_active {
                     return false
                 }
@@ -49,22 +40,20 @@ impl Day2 {
                 let mut vec2 = line.to_vec();
                 vec2.remove(i+1);
                 
-
                 return 
-                Self::safety_check(&vec1, i.saturating_sub(1), ascend, false) ||
-                Self::safety_check(&vec2, i, ascend, false)
+                Self::safety_check(&vec1, i.saturating_sub(1), false) ||
+                Self::safety_check(&vec2, i, false)
             }
-
+            
             i+=1;
         }
-
         true
     }
 
 }
 
 impl Solution for Day2 {
-    fn part1(&self) -> String { 0.to_string() }
+    fn part1(&self) -> String { self.solver(false).to_string() }
     fn part2(&self) -> String { self.solver(true).to_string()  }
 }
 
