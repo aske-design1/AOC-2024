@@ -14,83 +14,42 @@ impl Day2 {
         Self { input }
     }
 
-    fn solve1(&self) -> u32 {
+    fn solve1(&self, part2: bool) -> u32 {
         let mut accepted = 0;
         for line in self.input.iter() {
-            accepted += if Self::check_ascending(line) { 1 } 
-            else if Self::check_descending(line) { 1 } 
+            accepted += if Self::is_safe(line, part2) { 1 } 
             else { 0 };
         }
-
         accepted 
-    } 
+    }
 
-    fn solve2(&self) -> u32 {
-        let mut accepted = 0;
-        for line in self.input.iter() {
-            accepted += if Self::check_ascending2(line) { 1 } 
-            else if Self::check_descending2(line) { 1 } 
-            else { 0 };
-        }
+    fn is_safe(line: &Vec<u8>, part2: bool) -> bool {
+        let ascending = line[0] < line[1];
 
-        accepted 
-    } 
-
-    fn check_ascending(line: &Vec<u8>) -> bool {
-        for (num1, num2) in line.iter().tuple_windows() {
-            if *num1 <= *num2 || num1.abs_diff(*num2) > 3 {
-                return false
+        for (i, (num1, num2)) in line.iter().tuple_windows().enumerate() {
+            if num1.abs_diff(*num2) > 3 || ascending && *num1 >= *num2 || !ascending && *num1 <= *num2 {
+                return part2 && Self::part2(line, i)
             }
         }
         true
     }
     
-    fn check_descending(line: &Vec<u8>) -> bool {
-        for (num1, num2) in line.iter().tuple_windows() {
-            if *num1 >= *num2 || num1.abs_diff(*num2) > 3 {
-                return false
+    fn part2(line: &Vec<u8>, _i: usize) -> bool {
+        for i in 0..line.len() {
+            let mut new_line = line.clone();
+            new_line.remove(i);
+            if Self::is_safe(&new_line, false) {
+                return true
             }
         }
-        true
-    }
-
-    fn check_ascending2(line: &Vec<u8>) -> bool {
-        for (num1, num2) in line.iter().tuple_windows() {
-            if *num1 <= *num2 || num1.abs_diff(*num2) > 3 {
-                for i in 0..line.len() {
-                    let mut new_line = line.clone();
-                    new_line.remove(i);
-                    if Self::check_ascending(&new_line) {
-                        return true
-                    }
-                }
-                return false 
-            }
-        }
-        true
-    }
-    
-    fn check_descending2(line: &Vec<u8>) -> bool {
-        for (num1, num2) in line.iter().tuple_windows() {
-            if *num1 >= *num2 || num1.abs_diff(*num2) > 3 {
-                for i in 0..line.len() {
-                    let mut new_line = line.clone();
-                    new_line.remove(i);
-                    if Self::check_descending(&new_line) {
-                        return true
-                    }
-                }
-                return false 
-            }
-        }
-        true
+        return false
     }
 
 }
 
 impl Solution for Day2 {
-    fn part1(&self) -> String { self.solve1().to_string() }
-    fn part2(&self) -> String { self.solve2().to_string() }
+    fn part1(&self) -> String { self.solve1(false).to_string() }
+    fn part2(&self) -> String { self.solve1(true).to_string() }
 }
 
 #[cfg(test)]
