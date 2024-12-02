@@ -14,17 +14,6 @@ impl Day2 {
         Self { input }
     }
 
-    /*fn solver(&self, should_ignore: bool) -> u32 {
-        let mut accepted = 0;
-        for line in self.input.iter() {
-            if Self::check_safety(line, line[0] < line[1], should_ignore) ||
-            should_ignore && Self::check_safety(&line[1..], line[1] < line[2], false) {
-                accepted += 1;
-            }
-        }
-        accepted 
-    }*/ 
-
     fn solver(&self, skip_active: bool) -> u32 {
         let mut accepted = 0;
         for line in self.input.iter() {
