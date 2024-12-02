@@ -14,11 +14,21 @@ impl Day2 {
         Self { input }
     }
 
-    fn solver(&self, should_ignore: bool) -> u32 {
+    /*fn solver(&self, should_ignore: bool) -> u32 {
         let mut accepted = 0;
         for line in self.input.iter() {
             if Self::check_safety(line, line[0] < line[1], should_ignore) ||
             should_ignore && Self::check_safety(&line[1..], line[1] < line[2], false) {
+                accepted += 1;
+            }
+        }
+        accepted 
+    }*/ 
+
+    fn solver(&self, skip_active: bool) -> u32 {
+        let mut accepted = 0;
+        for line in self.input.iter() {
+            if Self::new_func(line, line[0] < line[1], skip_active) {
                 accepted += 1;
             }
         }
@@ -51,6 +61,30 @@ impl Day2 {
                 return false
             }
         }
+        true
+    }
+
+    fn new_func(line: &Vec<u8>, ascend: bool, mut skip_active: bool) -> bool {
+        let mut line: Vec<u8> = line.iter().copied().collect();
+        let mut i = 1;
+        while i < line.len() {
+            let mut flag = true;
+            let (num1, num2) = (line[i-1], line[i]);
+
+            if num1.abs_diff(num2) > 3 || ascend && num1 >= num2 || !ascend && num1 <= num2 {
+                flag = false 
+            }
+
+            if flag {
+                i+=1;
+            } else if !flag && skip_active {
+                skip_active = false;
+                line.remove(i);
+                continue;
+            } else {
+                return false
+            }
+        } 
         true
     }
     
