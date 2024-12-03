@@ -25,8 +25,8 @@ impl Day3 {
                     Some(str) if str.as_str().contains("do") => active = true,
                     _ => ()   
                 }
-                if !active{
-                    continue;
+                if !active{ 
+                    continue 
                 } 
                 if let (Some(num1), Some(num2)) = (captures.get(1), captures.get(2)) {
                     let num1 = num1.as_str().parse::<u64>().unwrap_or(0);
@@ -34,8 +34,6 @@ impl Day3 {
                     total += num1 * num2;
                 }
             }
-
-
         }
         total
     }
@@ -50,7 +48,8 @@ impl Solution for Day3 {
     }
     fn part2(&self) -> String { 
         let re = Regex::new(r"don't\(\)|do\(\)|mul\((\d+),\s*(\d+)\)").unwrap();
-        self.solver(re).to_string() }
+        self.solver(re).to_string() 
+    }
 }
 
 #[cfg(test)]
