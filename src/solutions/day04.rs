@@ -29,52 +29,64 @@ impl Day4 {
         let (x, y) = cord;
         let word = ['X', 'M', 'A', 'S'];
         let mut valid = 0;
-    
-        let valid_forward = 3 + x < grid[y].len();
-        let valid_backward = x >= 3;
-        let valid_up = y >= 3;
-        let valid_down = 3 + y < grid.len();
-    
-        if valid_forward 
+
+        //u8 that contains bits for valid dirs: 
+        let mut validizer: u8 = 0; 
+        //1st bit = forward
+        if 3 + x < grid[y].len() { validizer |= 1 << 0 }
+        //2nd bit = backward
+        if x >= 3 { validizer |= 1 << 1 }
+        //3rd bit = up 
+        if y >= 3 { validizer |= 1 << 2 }
+        //4th bit = down 
+        if 3 + y < grid.len() { validizer |= 1 << 3 }
+
+        //Forward
+        if validizer & 0b0001 != 0
         && word.iter().enumerate().all(|(i, &ch)| grid[y][x + i] == ch) {
             valid += 1;
         }
-    
-        if valid_backward 
+
+        //Backward
+        if validizer & 0b0010 != 0
         && word.iter().enumerate().all(|(i, &ch)| grid[y][x - i] == ch) {
             valid += 1;
         }
     
-        if valid_up 
+        //Up
+        if validizer & 0b0100 != 0
         && word.iter().enumerate().all(|(i, &ch)| grid[y - i][x] == ch) {
             valid += 1;
         }
     
-        if valid_down 
+        //Down
+        if validizer & 0b1000 != 0
         && word.iter().enumerate().all(|(i, &ch)| grid[y + i][x] == ch) {
             valid += 1;
         }
-    
-        if valid_forward && valid_up 
+        
+        //Up-forward
+        if validizer & 0b0101 == 0b0101 
         && word.iter().enumerate().all(|(i, &ch)| grid[y - i][x + i] == ch) {
             valid += 1;
         }
     
-        if valid_forward 
-        && valid_down && word.iter().enumerate().all(|(i, &ch)| grid[y + i][x + i] == ch) {
+        //down-forward
+        if validizer & 0b1001 == 0b1001  
+        && word.iter().enumerate().all(|(i, &ch)| grid[y + i][x + i] == ch) {
             valid += 1;
         }
-    
-        if valid_backward && valid_up 
+        //up-backward
+        if validizer & 0b0110 == 0b0110 
         && word.iter().enumerate().all(|(i, &ch)| grid[y - i][x - i] == ch) {
             valid += 1;
         }
     
-        if valid_backward && valid_down 
+        //down-backward
+        if validizer & 0b1010 == 0b1010 
         && word.iter().enumerate().all(|(i, &ch)| grid[y + i][x - i] == ch) {
             valid += 1;
         }
-    
         valid
     }
     
