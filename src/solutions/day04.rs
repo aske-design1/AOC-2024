@@ -40,53 +40,39 @@ impl Day4 {
         if y >= 3 { validizer |= 1 << 2 }
         //4th bit = down 
         if 3 + y < grid.len() { validizer |= 1 << 3 }
-
+        
         //Forward
         if validizer & 0b0001 != 0
-        && word.iter().enumerate().all(|(i, &ch)| grid[y][x + i] == ch) {
-            valid += 1;
-        }
-
+        && word.iter().enumerate().all(|(i, &ch)| grid[y][x + i] == ch) 
+        { valid += 1; }
         //Backward
         if validizer & 0b0010 != 0
-        && word.iter().enumerate().all(|(i, &ch)| grid[y][x - i] == ch) {
-            valid += 1;
-        }
-    
+        && word.iter().enumerate().all(|(i, &ch)| grid[y][x - i] == ch) 
+        { valid += 1 }
         //Up
         if validizer & 0b0100 != 0
-        && word.iter().enumerate().all(|(i, &ch)| grid[y - i][x] == ch) {
-            valid += 1;
-        }
-    
+        && word.iter().enumerate().all(|(i, &ch)| grid[y - i][x] == ch) 
+        { valid += 1 }
         //Down
         if validizer & 0b1000 != 0
-        && word.iter().enumerate().all(|(i, &ch)| grid[y + i][x] == ch) {
-            valid += 1;
-        }
-        
+        && word.iter().enumerate().all(|(i, &ch)| grid[y + i][x] == ch) 
+        { valid += 1 }
         //Up-forward
         if validizer & 0b0101 == 0b0101 
-        && word.iter().enumerate().all(|(i, &ch)| grid[y - i][x + i] == ch) {
-            valid += 1;
-        }
-    
+        && word.iter().enumerate().all(|(i, &ch)| grid[y - i][x + i] == ch) 
+        { valid += 1 }
         //down-forward
         if validizer & 0b1001 == 0b1001  
-        && word.iter().enumerate().all(|(i, &ch)| grid[y + i][x + i] == ch) {
-            valid += 1;
-        }
+        && word.iter().enumerate().all(|(i, &ch)| grid[y + i][x + i] == ch) 
+        { valid += 1 }
         //up-backward
         if validizer & 0b0110 == 0b0110 
-        && word.iter().enumerate().all(|(i, &ch)| grid[y - i][x - i] == ch) {
-            valid += 1;
-        }
-    
+        && word.iter().enumerate().all(|(i, &ch)| grid[y - i][x - i] == ch) 
+        { valid += 1 }
         //down-backward
         if validizer & 0b1010 == 0b1010 
-        && word.iter().enumerate().all(|(i, &ch)| grid[y + i][x - i] == ch) {
-            valid += 1;
-        }
+        && word.iter().enumerate().all(|(i, &ch)| grid[y + i][x - i] == ch) 
+        { valid += 1 }
         valid
     }
     
