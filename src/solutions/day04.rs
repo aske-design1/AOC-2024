@@ -15,33 +15,17 @@ impl Day4 {
     fn solver1(&self) -> u32 {
         let mut total = 0; 
         let grid = &self.input;
-
         for (i, line) in grid.iter().enumerate() {
             for (j, char) in line.iter().enumerate() {
                 if *char == 'X' {
-                    total += Self::check_valid((j,i), grid);
+                    total += Self::check_valid1((j,i), grid);
                 }
             }
         }
-
         total
     }
-    fn solver2(&self) -> u32 {
-        let mut total = 0; 
-        let grid = &self.input;
-
-        for (i, line) in grid.iter().enumerate() {
-            for (j, char) in line.iter().enumerate() {
-                if *char == 'A' {
-                    total += Self::check_valid2((j,i), grid);
-                }
-            }
-        }
-
-        total
-    }
-
-    fn check_valid(cord: (usize, usize), grid: &Vec<Vec<char>>) -> u32 {
+    
+    fn check_valid1(cord: (usize, usize), grid: &Vec<Vec<char>>) -> u32 {
         let (x, y) = cord; 
         let valid_forward = 3 + x < grid[y].len();
         let valid_backward = (x as i32) - 3 >= 0;
@@ -90,40 +74,34 @@ impl Day4 {
         valid
     }
 
+    fn solver2(&self) -> u32 {
+        let mut total = 0; 
+        let grid = &self.input;
+        for (i, line) in grid.iter().enumerate().skip(1).take(grid.len() - 2) {
+            for (j, char) in line.iter().enumerate().skip(1).take(line.len() - 2) {
+                if *char == 'A' { 
+                    total += Self::check_valid2((j,i), grid) 
+                }
+            }
+        }
+        total
+    }
     fn check_valid2(cord: (usize, usize), grid: &Vec<Vec<char>>) -> u32 {
         let (x, y) = cord; 
-        let valid_forward = 1 + x < grid[y].len();
-        let valid_backward = (x as i32) - 1 >= 0;
-        let valid_up = (y as i32) - 1 >= 0;
-        let valid_down = 1 + y < grid.len();
-
-        if !valid_forward || !valid_backward || !valid_up || !valid_down {
-            return 0
-        }
-
-
-        if  "MAS" == format!("{}{}{}", grid[y-1][x-1], grid[y][x],grid[y+1][x+1] ) 
-        && "MAS" == format!("{}{}{}", grid[y-1][x+1], grid[y][x], grid[y+1][x-1] ) {
-            return 1   
-        }
-
-        if  "MAS" == format!("{}{}{}", grid[y-1][x+1], grid[y][x],grid[y+1][x-1] ) 
-        && "MAS" == format!("{}{}{}", grid[y+1][x+1], grid[y][x], grid[y-1][x-1] ) {
-            return 1   
-        }
-
-        if  "MAS" == format!("{}{}{}", grid[y+1][x-1], grid[y][x],grid[y-1][x+1] ) 
-        && "MAS" == format!("{}{}{}", grid[y+1][x+1], grid[y][x], grid[y-1][x-1] ) {
-            return 1   
-        }
-
-        if  "MAS" == format!("{}{}{}", grid[y-1][x-1], grid[y][x],grid[y+1][x+1] ) 
-        && "MAS" == format!("{}{}{}", grid[y+1][x-1], grid[y][x], grid[y-1][x+1] ) {
-            return 1   
-        }
-
-
-        return 0
+        //Four cases:
+        //M   M     S   M    S   S    M   S
+        //  A         A        A        A
+        //S   S     S   M    M   M    M   S
+        if 'M' == grid[y-1][x-1] && 'M' == grid[y-1][x+1]
+        && 'S' == grid[y+1][x-1] && 'S' == grid[y+1][x+1]
+        || 'M' == grid[y-1][x+1] && 'M' == grid[y+1][x+1] 
+        && 'S' == grid[y-1][x-1] && 'S' == grid[y+1][x-1]
+        || 'M' == grid[y+1][x-1] && 'M' == grid[y+1][x+1]
+        && 'S' == grid[y-1][x-1] && 'S' == grid[y-1][x+1] 
+        || 'M' == grid[y-1][x-1] && 'M' == grid[y+1][x-1]
+        && 'S' == grid[y-1][x+1] && 'S' == grid[y+1][x+1]
+        { 1 } 
+        else { 0 }
     }
 
 
@@ -138,7 +116,8 @@ impl Solution for Day4 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    const TEST: &str = "MMMSXXMASM
+    const TEST: &str = 
+"MMMSXXMASM
 MSAMXMSMSA
 AMXSXMAAMM
 MSAMASMSMX
