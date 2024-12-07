@@ -1,5 +1,4 @@
 
-use core::hash;
 use std::collections::HashSet;
 
 use super::*;
@@ -26,9 +25,9 @@ impl Day6 {
     fn solve1(grid: &Vec<Vec<u8>>) -> u32 {
         use Directions::*; 
         let dirs = [North, East, South, West];
-        let mut dir_idx = 0;      
+        let mut dir_idx = 0;
     
-        let (mut y, mut x) = Self::find_pos(grid);
+        let Some((mut y, mut x)) = Self::find_pos(grid) else { panic!("Bad input") };
         let mut steps = HashSet::with_capacity(5500);
         loop {
             steps.insert((x, y));
@@ -44,6 +43,53 @@ impl Day6 {
         steps.len() as u32
     }
 
+
+    fn solve2(mut grid: Vec<Vec<u8>>) -> u32 {        
+        let mut valid = 0u32;
+        for i in 0..grid.len() {
+            for j in 0..grid[i].len() {
+                if grid[i][j] == b'#' || grid[i][j] == b'^' { continue } 
+                grid[i][j] = b'#'; 
+                if Self::check_if_loop(&grid) {
+                    valid += 1;
+                }
+                grid[i][j] = b'.';
+            }
+        }
+        valid
+    }
+
+    fn check_if_loop(grid: &Vec<Vec<u8>>) -> bool {
+        use Directions::*; 
+        let dirs = [North, East, South, West];
+        let mut dir_idx = 0;      
+        let Some((mut y, mut x)) = Self::find_pos(grid) else { panic!("Bad input") };
+        
+        let mut steps = 0;
+        while steps < 8000 {
+            if y == 0 || x == 0 || y + 1 == grid.len() || x + 1 == grid.len() { return false }
+            match dirs[dir_idx] {
+                North if grid[y - 1][x] != b'#' => y -= 1,
+                East  if grid[y][x + 1] != b'#' => x += 1,
+                South if grid[y + 1][x] != b'#' => y += 1,
+                West  if grid[y][x - 1] != b'#' => x -= 1,
+                _ => { dir_idx = (dir_idx + 1) % 4 }
+            }
+            steps+=1;
+        }
+        true
+    }
+
+    fn find_pos(grid: &Vec<Vec<u8>>) -> Option<(usize, usize)> {
+        for (i, line) in grid.iter().enumerate() {
+            for (j, byte) in line.iter().enumerate() {
+                if *byte == b'^' { return Some((i, j)) }
+            }
+        }
+        None
+    }
+
+    
     /*fn solve2(&self) -> u32 {
         use Directions::*; 
         let dirs = [North, East, South, West];
@@ -78,43 +124,6 @@ impl Day6 {
         }
         no_duplicates.len() as u32 
     }*/
-
-    fn solve2(mut grid: Vec<Vec<u8>>) -> u32 {        
-        let mut valid = 0u32;
-        for i in 0..grid.len() {
-            for j in 0..grid[i].len() {
-                if grid[i][j] == b'#' || grid[i][j] == b'^' { continue } 
-                grid[i][j] = b'#'; 
-                if Self::check_if_loop(&grid) {
-                    valid += 1;
-                }
-                grid[i][j] = b'.';
-            }
-        }
-        valid
-    }
-
-    fn check_if_loop(grid: &Vec<Vec<u8>>) -> bool {
-        use Directions::*; 
-        let dirs = [North, East, South, West];
-        let mut dir_idx = 0;      
-        let (mut y, mut x) = Self::find_pos(grid);
-        //let mut steps = HashSet::with_capacity(5500);
-        
-        let mut steps = 0;
-        while steps < 10000 {
-            if y == 0 || x == 0 || y + 1 == grid.len() || x + 1 == grid.len() { return false }
-            match dirs[dir_idx] {
-                North if grid[y - 1][x] != b'#' => y -= 1,
-                East  if grid[y][x + 1] != b'#' => x += 1,
-                South if grid[y + 1][x] != b'#' => y += 1,
-                West  if grid[y][x - 1] != b'#' => x -= 1,
-                _ => dir_idx = (dir_idx + 1) % 4
-            }
-            steps+=1;
-        }
-        true
-    }
 
     /*fn check_valid(grid: &Vec<Vec<u8>>, dir: &Directions, x:usize, y:usize) -> bool {
         use Directions::*;
@@ -256,18 +265,7 @@ impl Day6 {
 
         }
     }*/
-
-
-
-
-    fn find_pos(grid: &Vec<Vec<u8>>) -> (usize, usize) {
-        for (i, line) in grid.iter().enumerate() {
-            for (j, byte) in line.iter().enumerate() {
-                if *byte == b'^' { return (i, j) }
-            }
-        }
-        return (0,0)
-    }
+  
 }
 
 impl Solution for Day6 {

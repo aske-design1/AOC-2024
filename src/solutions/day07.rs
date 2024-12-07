@@ -21,43 +21,24 @@ impl Day7 {
     }
 
     fn check_equation(result: u64, accumulation: u64, numbers: &[u64]) -> bool {
-        if numbers.len() == 0 {
-            return result == accumulation
-        }
+        if numbers.is_empty() { return result == accumulation }
+        if  result < accumulation { return false }
 
-        if Self::check_equation(result, accumulation + numbers[0], &numbers[1..]) ||
+        Self::check_equation(result, accumulation + numbers[0], &numbers[1..]) ||
         Self::check_equation(result, accumulation * numbers[0], &numbers[1..])
-        { true } 
-        else { false }
     }
 
     fn check_equation2(result: u64, accumulation: u64, numbers: &[u64]) -> bool {
-        if numbers.len() == 0 {
-            return result == accumulation
-        }
+        if numbers.is_empty() { return result == accumulation } 
+        if  result < accumulation { return false }
 
-        if Self::check_equation2(result, accumulation + numbers[0], &numbers[1..]) ||
+        Self::check_equation2(result, accumulation + numbers[0], &numbers[1..]) ||
         Self::check_equation2(result, accumulation * numbers[0], &numbers[1..]) ||
         Self::check_equation2(result, format!("{}{}", accumulation, numbers[0]).parse().unwrap(), &numbers[1..])
-        { true } 
-        else { false }
     }
 
-
-
-    fn solve1(&self) -> u64 {
-        self.input.iter().fold(0, |acc, nums| {
-            if Self::check_equation(nums[0], 0,  &nums[1..]) { acc + nums[0] } 
-            else { acc }
-        })
-    }
-
-    fn solve2(&self) -> u64 {
-        self.input.iter().fold(0, |acc, nums| {
-            if Self::check_equation2(nums[0], 0,  &nums[1..]) { acc + nums[0] } 
-            else { acc }
-        })
-    }
+    fn solve1(&self) -> u64 { self.input.iter().fold(0, |acc, nums| acc + nums[0] * (Self::check_equation(nums[0], 0,  &nums[1..]) as u64)) }
+    fn solve2(&self) -> u64 { self.input.iter().fold(0, |acc, nums| acc + nums[0] * (Self::check_equation2(nums[0], 0,  &nums[1..]) as u64)) }
 }
 
 impl Solution for Day7 {
