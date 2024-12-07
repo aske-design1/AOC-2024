@@ -1,0 +1,88 @@
+
+use super::*;
+
+pub struct Day7 {
+    input: Vec<Vec<u64>>
+}
+
+impl Day7 {
+    pub fn new(input: &str) -> Self {
+        let splitter = if input.contains("\r\n") { "\r\n" } else { "\n" };
+        let input = input.split(splitter).map(|line| {
+            let (num1, num2) = line.split_once(": ").unwrap();
+            let num1 = num1.parse().unwrap();
+            let num2_vec = num2.split_ascii_whitespace().map(|num| num.parse().unwrap()).collect();
+           
+            [vec![num1], num2_vec].concat()
+        }).collect();
+
+        //Put into one vec, where the first num is the results
+        Self { input }
+    }
+
+    fn check_equation(result: u64, accumulation: u64, numbers: &[u64]) -> bool {
+        if numbers.len() == 0 {
+            return result == accumulation
+        }
+
+        if Self::check_equation(result, accumulation + numbers[0], &numbers[1..]) ||
+        Self::check_equation(result, accumulation * numbers[0], &numbers[1..])
+        { true } 
+        else { false }
+    }
+
+    fn check_equation2(result: u64, accumulation: u64, numbers: &[u64]) -> bool {
+        if numbers.len() == 0 {
+            return result == accumulation
+        }
+
+        if Self::check_equation2(result, accumulation + numbers[0], &numbers[1..]) ||
+        Self::check_equation2(result, accumulation * numbers[0], &numbers[1..]) ||
+        Self::check_equation2(result, format!("{}{}", accumulation, numbers[0]).parse().unwrap(), &numbers[1..])
+        { true } 
+        else { false }
+    }
+
+
+
+    fn solve1(&self) -> u64 {
+        self.input.iter().fold(0, |acc, nums| {
+            if Self::check_equation(nums[0], 0,  &nums[1..]) { acc + nums[0] } 
+            else { acc }
+        })
+    }
+
+    fn solve2(&self) -> u64 {
+        self.input.iter().fold(0, |acc, nums| {
+            if Self::check_equation2(nums[0], 0,  &nums[1..]) { acc + nums[0] } 
+            else { acc }
+        })
+    }
+}
+
+impl Solution for Day7 {
+    fn part1(&self) -> String { self.solve1().to_string() }
+    fn part2(&self) -> String { self.solve2().to_string() }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    const TEST: &str = "190: 10 19
+3267: 81 40 27
+83: 17 5
+156: 15 6
+7290: 6 8 6 15
+161011: 16 10 13
+192: 17 8 14
+21037: 9 7 18 13
+292: 11 6 16 20";
+    
+    #[test] fn test1() {
+        assert_eq!(Day7::new(TEST).part1(), 3749.to_string());
+    }
+    #[test] fn test2() {
+        assert_eq!(Day7::new(TEST).part2(), 11387.to_string());
+    }
+}
+

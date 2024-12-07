@@ -7,6 +7,7 @@ pub struct Day6 {
     input: Vec<Vec<u8>>
 }
 
+#[derive(PartialEq, Eq)]
 enum Directions {
     North,
     East, 
@@ -29,7 +30,7 @@ impl Day6 {
 
         let grid = &self.input;
         let (mut y, mut x) = Self::find_pos(grid);
-        let mut steps = HashSet::new();
+        let mut steps = HashSet::with_capacity(5500);
 
         loop {
             steps.insert((x, y));
@@ -38,50 +39,11 @@ impl Day6 {
             }
 
             match dirs[dir_idx] {
-                North => {
-                    match grid[y - 1][x] {
-                        b'#' => { 
-                            
-        
-                            dir_idx = (dir_idx + 1) % 4;
-                            continue;
-                        },
-                        _ => y -= 1
-                    }
-                },
-                East => {
-                    match grid[y][x + 1] {
-                        b'#' => { 
-                            
-        
-                            dir_idx = (dir_idx + 1) % 4;
-                            continue;
-                        },
-                        _ => x += 1
-                    }
-                },
-                South => {
-                    match grid[y + 1][x] {
-                        b'#' => { 
-                            
-        
-                            dir_idx = (dir_idx + 1) % 4;
-                            continue;
-                        },
-                        _ => y += 1
-                    }
-                },
-                West => {
-                    match grid[y][x - 1] {
-                        b'#' => { 
-                            
-        
-                            dir_idx = (dir_idx + 1) % 4;
-                            continue;
-                        },
-                        _ => x -= 1
-                    }
-                } ,
+                North if grid[y - 1][x] != b'#' => y -= 1,
+                East  if grid[y][x + 1] != b'#' => x += 1,
+                South if grid[y + 1][x] != b'#' => y += 1,
+                West  if grid[y][x - 1] != b'#' => x -= 1,
+                _ => dir_idx = (dir_idx + 1) % 4
             }
 
         }
@@ -97,117 +59,104 @@ impl Day6 {
         let grid = &self.input;
         let (start_y, start_x) = Self::find_pos(grid);
         let (mut y, mut x) = (start_y, start_x);
-        
-        let mut obstructions = HashSet::new();
+
+        let mut counter = 0;
 
         loop {
-            if !obstructions.contains(&(x,y)) && Self::check_cycle(grid,x, y, start_x, start_y) {
-                println!("{x} {y}");
 
-                obstructions.insert((x, y));
+            if y == 0 || x == 0 || y + 1 == grid.len() || x + 1 == grid.len() { break }
+
+            if Self::check_valid(grid, &dirs[dir_idx], x, y) && Self::check_cycle(grid,x, y, dir_idx) {
+                //println!("{} {}",x,y);
+                counter+=1;
             }
-
-            if y == 0 || x == 0 || y + 1 == grid.len() || x + 1 == grid.len() {
-                break;
-            }
-
-            
 
             match dirs[dir_idx] {
-                North => {
-                    match grid[y - 1][x] {
-                        b'#' => { dir_idx = (dir_idx + 1) % 4; continue },
-                        _ => y -= 1
-                    }
-                },
-                East => {
-                    match grid[y][x + 1] {
-                        b'#' => { dir_idx = (dir_idx + 1) % 4; continue },
-                        _ => x += 1
-                    }
-                },
-                South => {
-                    match grid[y + 1][x] {
-                        b'#' => { 
-                            dir_idx = (dir_idx + 1) % 4;
-                            continue;
-                        },
-                        _ => y += 1
-                    }
-                },
-                West => {
-                    match grid[y][x - 1] {
-                        b'#' => { 
-                            
-        
-                            dir_idx = (dir_idx + 1) % 4;
-                            continue;
-                        },
-                        _ => x -= 1
-                    }
-                } ,
+                North if grid[y - 1][x] != b'#' => y -= 1,
+                East  if grid[y][x + 1] != b'#' => x += 1,
+                South if grid[y + 1][x] != b'#' => y += 1,
+                West  if grid[y][x - 1] != b'#' => x -= 1,
+                _ => { dir_idx = (dir_idx + 1) % 4 }
             }
+
         }
-        obstructions.len() as u32 
+        counter 
     }
 
-    fn check_cycle(grid: &Vec<Vec<u8>>, cur_x: usize, cur_y: usize, end_x: usize, end_y: usize) -> bool {
-        if cur_x == end_x && cur_y == end_y { return false }
-        
+    fn check_valid(grid: &Vec<Vec<u8>>, dir: &Directions, x:usize, y:usize) -> bool {
+        use Directions::*;
+        match dir {
+            North if grid[y - 1][x] == b'#' => false,
+            East  if grid[y][x + 1] == b'#' => false,
+            South if grid[y + 1][x] == b'#' => false,
+            West  if grid[y][x - 1] == b'#' => false,
+            _ => true
+        }
+    }
+
+    fn print_grid(grid: &Vec<Vec<u8>>) {
+        print!("    ");
+        for i in 0..grid.len() {
+            print!("{}    ", i);
+        }
+        println!();
+
+        for (i, line) in grid.iter().enumerate() {
+            let line: Vec<char> = line.iter().map(|el| *el as char).collect();
+            println!("{} {:?}", i, line);
+            
+        }
+
+
+    }
+
+    fn check_cycle(grid: &Vec<Vec<u8>>, start_x: usize, start_y: usize, start_dir: usize) -> bool {
         use Directions::*;
         let dirs = [North, East, South, West];
-        let mut dir_idx = 0;      
+        let (mut x, mut y) = (start_x, start_y);
 
-        let (mut x, mut y) = (cur_x, cur_y);
+        //println!("Start: ({start_x}, {start_y}) {start_dir}");
+        let mut grid = grid.clone();
+        match dirs[start_dir] {
+            North => grid[y - 1][x] = b'#',
+            East  => grid[y][x + 1] = b'#',
+            South => grid[y + 1][x] = b'#',
+            West  => grid[y][x - 1] = b'#',
+        }
 
-        let mut steps = 0; 
-        while steps < 5403 {
-            if x == end_x && y == end_y {
-                return true
-            }
-            
+        let mut dir_idx = (start_dir + 1) % 4;
+        let mut seen = HashSet::new();
+
+        //let mut steps = 0; 
+        loop {
+            //println!("cur: ({x}, {y}) {dir_idx} --- Start: ({start_x}, {start_y}) {start_dir}");
             if y == 0 || x == 0 || y + 1 == grid.len() || x + 1 == grid.len() {
                 return false;
             }
 
-            match dirs[dir_idx] {
-                North => {
-                    match grid[y - 1][x] {
-                        b'#' => { dir_idx = (dir_idx + 1) % 4; continue },
-                        _ => y -= 1
-                    }
-                },
-                East => {
-                    match grid[y][x + 1] {
-                        b'#' => { dir_idx = (dir_idx + 1) % 4; continue },
-                        _ => x += 1
-                    }
-                },
-                South => {
-                    match grid[y + 1][x] {
-                        b'#' => { 
-                            dir_idx = (dir_idx + 1) % 4;
-                            continue;
-                        },
-                        _ => y += 1
-                    }
-                },
-                West => {
-                    match grid[y][x - 1] {
-                        b'#' => { 
-                            
-        
-                            dir_idx = (dir_idx + 1) % 4;
-                            continue;
-                        },
-                        _ => x -= 1
-                    }
-                } ,
+            /*if x == start_x && y == start_y && start_dir == dir_idx {
+                //println!("cur: ({x}, {y}) {dir_idx} --- Start: ({start_x}, {start_y}) {start_dir}");
+                //println!("Accepted");
+                return true
+            }*/
+            if !seen.insert((x, y, dir_idx)) {
+                return true
             }
 
-            steps+=1;
+
+            match dirs[dir_idx] {
+                North if grid[y - 1][x] != b'#' => y -= 1,
+                East  if grid[y][x + 1] != b'#' => x += 1,
+                South if grid[y + 1][x] != b'#' => y += 1,
+                West  if grid[y][x - 1] != b'#' => x -= 1,
+                _ => dir_idx = (dir_idx + 1) % 4
+            }
+
+            
+            
+            //steps+=1;
         }
-        false
+        //true
 
     }
 
@@ -230,7 +179,8 @@ impl Solution for Day6 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    const TEST: &str = "....#.....
+    const TEST: &str = 
+"....#.....
 .........#
 ..........
 ..#.......
