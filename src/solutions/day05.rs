@@ -69,21 +69,15 @@ impl Day5 {
                 flag = true; 
                 let mut k = j;
                 while i < k {
-                    // 0     4
-                    // i     j 
-                    // 5 2 4 1 3
                     //Swap numbers
                     (numbers[k - 1], numbers[k]) = (numbers[k], numbers[k - 1]); 
-                    k-=1;
+                    k-=1
                 }
-                i+=1;
+                i+=1
             }
             if flag { i = 0; continue }
-
-            i+=1;
+            i+=1
         }
-
-
         numbers[len / 2] as u32
     }
 
