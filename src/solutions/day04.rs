@@ -7,30 +7,20 @@ pub struct Day4 {
 
 impl Day4 {
     pub fn new(input: &str) -> Self {
-        //let splitter = if input.contains("\r\n") { "\r\n" } else { "\n" };
-        //let input = input.split(splitter).map(|line| line.as_bytes().to_vec()).collect();
         Self { input: input.to_string() }
     }
 
     fn solver1(&self) -> u32 {
-        let splitter = if self.input.contains("\r\n") { "\r\n" } else { "\n" };
-        let grid: Vec<&[u8]> = self.input.split(splitter).map(|line| line.as_bytes()).collect();
-
-        let mut total = 0; 
-        for (i, line) in grid.iter().enumerate() {
-            for (j, char) in line.iter().enumerate() {
-                if *char == b'X' {
-                    total += Self::check_valid1((j,i), &grid);
-                }
-            }
-        }
-        total
+        let grid: Vec<&[u8]> = self.input.split("\n").map(|line| line.as_bytes()).collect();
+        grid.iter().enumerate().fold(0, |acc, (i, line)| 
+            acc + line.iter().enumerate().fold(0, |acc, (j, byte)| 
+                acc + if *byte == b'X' { Self::check_valid1((j,i), &grid) } else { 0 } 
+            )
+        )
     }
 
-    fn check_valid1(cord: (usize, usize), grid: &Vec<&[u8]>) -> u32 {
-        let (x, y) = cord;
+    fn check_valid1((x, y): (usize, usize), grid: &Vec<&[u8]>) -> u32 {
         let word = [b'X', b'M', b'A', b'S'];
-
         //u8 that contains bits for valid dirs: 
         let directions: u8 =  
         //1st bit = forward
@@ -41,7 +31,6 @@ impl Day4 {
         (1 << 2) * ((y >= 3) as u8) +
         //4th bit = down
         (1 << 3) * ((3 + y < grid.len() ) as u8);
-
         //Forward
         1*((directions & 0b0001 != 0
         && word.iter().enumerate().all(|(i, &ch)| grid[y][x + i] == ch)) as u32)+
@@ -71,39 +60,30 @@ impl Day4 {
 
     fn solver2(&self) -> u32 {
         let splitter = if self.input.contains("\r\n") { "\r\n" } else { "\n" };
-        //let grid: &[u8] = self.input.as_bytes();
         let grid: Vec<&[u8]> = self.input.split(splitter).map(|line| line.as_bytes()).collect();
-        let mut total = 0; 
-        //let len = grid.iter().find(|&ch| *ch == b'\n');
 
-        for (i, line) in grid.iter().enumerate().skip(1).take(grid.len() - 2) {
-            for (j, char) in line.iter().enumerate().skip(1).take(line.len() - 2) {
-                if *char == b'A' { 
-                    total += Self::check_valid2((j,i), &grid) 
-                }
-            }
-        }
-        total
-    }
-    fn check_valid2(cord: (usize, usize), grid: &Vec<&[u8]>) -> u32 {
-        let (x, y) = cord; 
-        //Four cases:
-        //M   M     S   M    S   S    M   S
-        //  A         A        A        A
-        //S   S     S   M    M   M    M   S
-        if b'M' == grid[y-1][x-1] && b'M' == grid[y-1][x+1]
-        && b'S' == grid[y+1][x-1] && b'S' == grid[y+1][x+1]
-        || b'M' == grid[y-1][x+1] && b'M' == grid[y+1][x+1] 
-        && b'S' == grid[y-1][x-1] && b'S' == grid[y+1][x-1]
-        || b'M' == grid[y+1][x-1] && b'M' == grid[y+1][x+1]
-        && b'S' == grid[y-1][x-1] && b'S' == grid[y-1][x+1] 
-        || b'M' == grid[y-1][x-1] && b'M' == grid[y+1][x-1]
-        && b'S' == grid[y-1][x+1] && b'S' == grid[y+1][x+1]
-        { 1 } 
-        else { 0 }
+        grid.iter().enumerate().skip(1).take(grid.len() - 2)
+        .fold(0, |acc, (i, line)|
+            acc + line.iter().enumerate().skip(1).take(line.len() - 2).fold(
+                0, |acc, (j, byte)| acc + ((*byte == b'A' && Self::check_valid2((j, i), &grid)) as u32)
+            )
+        )
     }
 
-
+    //Four cases:
+    //M   M     S   M    S   S    M   S
+    //  A         A        A        A
+    //S   S     S   M    M   M    M   S
+    fn check_valid2((x, y): (usize, usize), grid: &Vec<&[u8]>) -> bool {
+        b'M' == grid[y-1][x-1] && b'M' == grid[y-1][x+1] && 
+        b'S' == grid[y+1][x-1] && b'S' == grid[y+1][x+1] || 
+        b'M' == grid[y-1][x+1] && b'M' == grid[y+1][x+1] &&
+        b'S' == grid[y-1][x-1] && b'S' == grid[y+1][x-1] || 
+        b'M' == grid[y+1][x-1] && b'M' == grid[y+1][x+1] && 
+        b'S' == grid[y-1][x-1] && b'S' == grid[y-1][x+1] || 
+        b'M' == grid[y-1][x-1] && b'M' == grid[y+1][x-1] && 
+        b'S' == grid[y-1][x+1] && b'S' == grid[y+1][x+1]
+    }
 
 }
 
