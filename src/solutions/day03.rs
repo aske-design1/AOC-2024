@@ -4,34 +4,32 @@ use regex::Regex;
 use super::*;
 
 pub struct Day3 {
-    input: Vec<String>
+    input: String
 }
 
 impl Day3 {
     pub fn new(input: &str) -> Self {
-        let splitter = if input.contains("\r\n") { "\r\n" } else { "\n" };
-        let input = input.to_string().split(splitter).map(|line| line.to_string()).collect();
+        let input = input.to_string();
         Self { input }
     }
 
     fn solver(&self, re: Regex) -> u64 {
         let mut active = true;
         let mut total: u64 = 0;
-        for line in self.input.iter() {
-            for captures in re.captures_iter(line) {
-                match captures.get(0) {
-                    Some(str) if str.as_str().contains("don't") => active = false,
-                    Some(str) if str.as_str().contains("do") => active = true,
-                    _ => ()   
-                }
-                if !active{ 
-                    continue 
-                } 
-                if let (Some(num1), Some(num2)) = (captures.get(1), captures.get(2)) {
-                    let num1 = num1.as_str().parse::<u64>().unwrap_or(0);
-                    let num2 = num2.as_str().parse::<u64>().unwrap_or(0);
-                    total += num1 * num2;
-                }
+
+        for captures in re.captures_iter(&self.input) {
+            match captures.get(0) {
+                Some(str) if str.as_str() == "don't()" => active = false,
+                Some(str) if str.as_str() == "do()" => active = true,
+                _ => ()
+            }
+            if !active{ 
+                continue 
+            } 
+            if let (Some(num1), Some(num2)) = (captures.get(1), captures.get(2)) {
+                let num1 = num1.as_str().parse::<u64>().unwrap_or(0);
+                let num2 = num2.as_str().parse::<u64>().unwrap_or(0);
+                total += num1 * num2;
             }
         }
         total
