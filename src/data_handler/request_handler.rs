@@ -1,4 +1,4 @@
-use crate::error_handling::Error;
+use crate::{error_handling::Error, util::string_extensions::TrimTralingEmptyLine};
 
 
 pub async fn get_input(day_num: u8) -> Result<String, Error>  {
@@ -29,8 +29,10 @@ pub async fn get_input(day_num: u8) -> Result<String, Error>  {
     match response.text().await {
         Ok(failure) if failure.len() == 210 && &failure[..6] == "Please" 
         => Err(Error::NetworkError("Content not released".to_string())),
-
-        Ok(input) => Ok(input),
+        Ok(input) => Ok(input.remove_trailing_newline()),
         Err(_) => Err(Error::NetworkError("Getting input failed".to_string()))
     }
 }
+
+
+
