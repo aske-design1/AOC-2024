@@ -8,14 +8,14 @@ pub trait TrimTralingEmptyLine {
 impl TrimTralingEmptyLine for String {
     fn remove_trailing_newline(mut self) -> Self {
         if self.chars().last() == Some('\n') {
-            self.pop();  //Remove the last char if it is a newline
+            self.pop();
         }
         self
     }
 
     fn trim_trailing_newline(&mut self) {
         if self.chars().last() == Some('\n') {
-            self.pop();  //Remove the last char if it is a newline
+            self.pop();
         }
     }
 

@@ -20,6 +20,18 @@ impl Day7 {
         Self { input }
     }
 
+    fn num_digits(mut n: u64) -> u32 {
+        if n == 0 {
+            return 1;
+        }
+        let mut digits = 0;
+        while n > 0 {
+            n /= 10;
+            digits += 1;
+        }
+        digits as u32
+    }
+
     fn check_equation(result: u64, accumulation: u64, numbers: &[u64]) -> bool {
         if numbers.is_empty() { return result == accumulation }
         if  result < accumulation { return false }
@@ -34,7 +46,7 @@ impl Day7 {
 
         Self::check_equation2(result, accumulation + numbers[0], &numbers[1..]) ||
         Self::check_equation2(result, accumulation * numbers[0], &numbers[1..]) ||
-        Self::check_equation2(result, format!("{}{}", accumulation, numbers[0]).parse().unwrap(), &numbers[1..])
+        Self::check_equation2(result, accumulation * 10u64.pow(Self::num_digits(numbers[0])) + numbers[0], &numbers[1..])
     }
 
     fn solve1(&self) -> u64 { self.input.iter().fold(0, |acc, nums| acc + nums[0] * (Self::check_equation(nums[0], 0,  &nums[1..]) as u64)) }

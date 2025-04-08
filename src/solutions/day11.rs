@@ -12,36 +12,37 @@ impl Day11 {
         Self { input }
     }
 
+    fn num_digits(mut n: u64) -> u32 {
+        if n == 0 {
+            return 1;
+        }
+        let mut digits = 0;
+        while n > 0 {
+            n /= 10;
+            digits += 1;
+        }
+        digits as u32
+    }
+
     fn solve1(&self, iterations: usize) -> u64 {
+        //Wrong now
         let mut nums = self.input.clone();
-        for i in 0..iterations {
-            //let mut insert = 0;
+        for _ in 0..iterations {
             let len = nums.len();
             for i in 0..len {
-                match nums.get(i ).unwrap() {
-                    0 => { nums.get_mut(i ).map(|val| *val = 1); },
-                    num if ((*num as f64).log(10.0).floor() as u32 & 1) == 0 => {
-                        //let num_str = num.to_string();
-                        let len = (*num as f64).log(10.0).floor() as u64;
-                        let (left, right) = ((*num) / len, *num % len);
-
-
-                        //let (left, right) = num_str.split_at(num_str.len() / 2);
-                        //let (left, right) = (left.trim_start_matches("0"), right.trim_start_matches("0"));
-                        //nums[i] = left.parse().unwrap_or(0);
-                        nums[i] = left; 
-                        //insert+=1;
-                        //println!("{left}, {right}");
-                        //nums.push(right.parse().unwrap_or(0));
+                match nums.get_mut(i) {
+                    Some(0) => { nums[0] = 1; }
+                    Some(num) if Self::num_digits(*num) % 2 == 0 => {
+                        let half = 10_u64.pow(Self::num_digits(*num)); 
+                        let (left, right) = (*num / half, *num % half);
+                        *num = left;
                         nums.push(right);
                     }
-                    _ => { nums.get_mut(i).map(|val| *val *= 2024); }
+                    Some(num) => { *num *= 2024; }
+                    None => (),
                 }
             }
-            //println!("{}",nums.len());
-            println!("{i} ");
         }
-        println!();
         nums.len() as u64
     }
 }
@@ -57,6 +58,9 @@ mod tests {
     const TEST: &str = "125 17";
     #[test] fn test1() {
         assert_eq!(Day11::new(TEST).part1(), 55312.to_string());
+    }
+    #[test] fn test3() {
+        assert_eq!(Day11::new(TEST).solve1(6), 22);
     }
     #[test] fn test2() {
         assert_eq!(Day11::new(TEST).part2(), 0.to_string());
