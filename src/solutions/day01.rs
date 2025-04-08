@@ -21,7 +21,7 @@ impl Day1 {
         let (mut column1, mut column2) = (self.right.clone(), self.left.clone());
         column1.sort_unstable();
         column2.sort_unstable();
-        column1.iter().zip(column2).map(|(a, b)| a.abs_diff(b)).sum()
+        column1.into_iter().zip(column2).map(|(a, b)| a.abs_diff(b)).sum()
     }
 
     fn solve2(&self) -> u32 {
