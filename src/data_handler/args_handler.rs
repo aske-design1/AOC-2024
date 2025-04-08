@@ -64,7 +64,7 @@ fn create_day_object(day_num: u8, input: String) -> Box<dyn Solution> {
     }
 }
 
-pub fn get_input(args: &[String]) -> FileResult<Box<dyn Solution>> {
+pub async fn get_input(args: &[String]) -> FileResult<Box<dyn Solution>> {
     let day = &args[0];
     let day_num = day.parse::<u8>()?;
 
@@ -74,7 +74,10 @@ pub fn get_input(args: &[String]) -> FileResult<Box<dyn Solution>> {
         return Err(Error::InvalidDayNumber(day_num))
     }
 
-    let input = std::fs::read_to_string(path)?;
+    let input = match std::fs::read_to_string(path) {
+        Ok(str) => str,
+        Err(_) => create_input_file(args).await?,
+    };
 
     Ok(create_day_object(day_num, input))
 }
@@ -90,7 +93,7 @@ pub async fn create_input_file(args: &[String]) -> FileResult<String> {
     let content = super::request_handler::get_input(day_num).await?;
     std::fs::File::create(path)?.write_all(content.as_bytes())?;
 
-    Ok("File successfully created".to_string())
+    Ok(content)
 }
 
 pub fn create_rust_file(args: &[String]) -> FileResult<String> {

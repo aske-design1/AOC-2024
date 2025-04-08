@@ -1,7 +1,4 @@
 //todo write tests
-//todo split into seperate files --> Figure out some smart names
-//todo Maybe put error_handling file into another folder
-//todo if a line in an input is empty then it should be removed
 
 use std::{env, time::Instant};
 use aoc_2024::{
@@ -20,14 +17,15 @@ async fn main() {
 
     match args[1].to_lowercase().as_str() {
         "day" => {
-            match args_handler::get_input(&args[2..]) {
+            match args_handler::get_input(&args[2..]).await {
                 Ok(day) => print_solution(day),
                 Err(e) => println!("{e}")
             } 
         },
         "create_input_file" => {
             match args_handler::create_input_file(&args[2..]).await {
-                Ok(msg) => println!("{msg}"),
+                Ok(msg) if msg.contains("File already exists") => println!("{msg}"),
+                Ok(msg) => println!("File Successfully Created\nContent: {}", &msg[..if msg.len() > 100 { 100 } else { msg.len() }]),
                 Err(msg) => println!("{msg}")
             }
         },

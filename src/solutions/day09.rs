@@ -2,19 +2,19 @@
 use super::*;
 
 #[allow(dead_code)]
-pub struct Day10 {
-    input: Vec<String>
+pub struct Day9 {
+    input: String
 }
 
-impl Day10 {
+impl Day9 {
     pub fn new(input: &str) -> Self {
         let splitter = if input.contains("\r\n") { "\r\n" } else { "\n" };
-        let input = input.split(splitter).map(String::from).collect();
+        let input = input.to_string();
         Self { input }
     }
 }
 
-impl Solution for Day10 {
+impl Solution for Day9 {
     fn part1(&self) -> String { 0.to_string() }
     fn part2(&self) -> String { 0.to_string() }
 }
@@ -22,21 +22,13 @@ impl Solution for Day10 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    const TEST: &str = 
-"89010123
-78121874
-87430965
-96549874
-45678903
-32019012
-01329801
-10456732";
+    const TEST: &str = "INPUT HERE";
     
     #[test] fn test1() {
-        assert_eq!(Day10::new(TEST).part1(), 36.to_string());
+        assert_eq!(Day9::new(TEST).part1(), 0.to_string());
     }
     #[test] fn test2() {
-        assert_eq!(Day10::new(TEST).part2(), 0.to_string());
+        assert_eq!(Day9::new(TEST).part2(), 0.to_string());
     }
 }
 

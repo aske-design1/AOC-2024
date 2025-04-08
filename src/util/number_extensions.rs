@@ -19,3 +19,15 @@ impl CalcDigits for u64 {
         digits
     }
 }
+
+#[cfg(test)] 
+mod tests {
+    use super::*;
+    #[test]
+    fn test_len() {
+        (0..10)
+        .map(|num| 10u64.pow(num))
+        .zip(1..=10)
+        .for_each(|(num, len)| assert_eq!(len, num.number_digits()));
+    }
+}

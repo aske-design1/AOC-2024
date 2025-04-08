@@ -4,6 +4,7 @@ pub fn get_template(day_num: u8) -> String
 format!(r#"
 use super::*;
 
+#[allow(dead_code)]
 pub struct Day{day_num} {{
     input: String
 }}
