@@ -10,7 +10,7 @@ use crate::solutions::{
     day06,
     day07,
     day08,
-    //day09,
+    day09,
     day10,
     day11,
     /*day12,
@@ -43,7 +43,7 @@ fn create_day_object(day_num: u8, input: String) -> Box<dyn Solution> {
         6  => Box::new(day06::Day6::new(&input)),
         7  => Box::new(day07::Day7::new(&input)),
         8  => Box::new(day08::Day8::new(&input)),
-       // 9  => Box::new(day09::Day9::new(&input)),
+        9  => Box::new(day09::Day9::new(&input)),
         10 => Box::new(day10::Day10::new(&input)),
         11 => Box::new(day11::Day11::new(&input)),/*
         12 => Box::new(day12::Day12::new(&input)),
